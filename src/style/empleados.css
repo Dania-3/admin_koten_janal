@@ -1,0 +1,15 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    font-family: 'Merriweather';
+    overflow: hidden;
+}
+
+/*h1 {
+    font-size: 40px;
+    color: white;
+    text-align: center;
+    margin-top: 0;
+}
+    */

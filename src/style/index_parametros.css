@@ -1,0 +1,217 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /*font-size: 16px;*/
+}
+
+/*COLORES*/
+:root{
+    --primario: #6A1B47;
+    --primario_sec: #480028;
+    --secundario: #44112E;
+    --auxiliar1: #000000;
+    --auxiliar2: #FFFFFF;
+}
+
+
+/*TIPOGRAFIAS*/
+h1{
+    font-family: "Merriweather Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 48px;
+    color: var(--auxiliar1);
+}
+h2{
+    font-family: "Open Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-size: 40px;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+    color: var(--auxiliar1);
+}
+h3{
+    font-family: "Open Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-size: 36px;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+    color: var(--auxiliar1);
+}
+h4{
+    font-family: "Karla", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 200;
+    font-style: normal;
+    font-size: 32px;
+    color: var(--auxiliar1);
+}
+h5{
+    font-family: "Karla", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 24px;
+    color: var(--auxiliar1);
+}
+h6{
+    font-family: "Karla", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 200;
+    font-style: normal;
+    font-size: 16px;
+    color: var(--auxiliar2);
+}
+p{
+    /*ExtraLight 200 Italic*/
+    font-family: "Karla", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 200;
+    font-style: ExtraLight;
+    font-size: 20px;
+    color: var(--auxiliar1);
+}
+
+/****************TABLAS*******************/
+
+@keyframes pulse{
+    0%{
+        transform: scale(1);
+    }
+    50%{
+        transform: scale(1.02);
+    }
+    100%{
+        transform: scale(1);
+    }
+}
+
+
+.circulos{
+    text-align: center;
+    font-weight: 400;
+    color:#000000;
+    font-size: 15px;
+    width: 50px;
+    height: 50px;
+    background-color:white ;
+    border-radius: 50% ;
+  }
+
+  .circulos-flecha{
+    display: flex;
+    font-weight: 400;
+    color: #000000;
+    text-align: center;
+    justify-content: center;
+    font-size: 28px;
+    width: 50px;
+    height: 50px;
+    background-color:white;
+    border: 2px solid black;
+    border-radius: 50%;
+    animation: pulse 2s infinite ease-in-out;
+  }
+th {
+    font-weight: bold;
+    height: 60px;
+    background-color: #dcd4d4;/*cambiar el color*/
+}
+table {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden; /* Para que el border-radius afecte a la tabla completa */
+  }
+  thead {
+    background-color: #dcd4d4;/*cambiar el color*/
+    /*background-color: #007bff; /* Azul */
+    border-bottom: 3px solid black;
+  }
+  th, td {
+    border-bottom: 2px solid black;
+    padding: 10px;
+    text-align: left;
+
+    font-family: "Karla", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 200;
+    font-style: normal;
+    font-size: 16px;
+    color: var(--auxiliar1);
+  }
+
+
+  /*otros estilos*/
+  
+.btn-verde {
+    width: 65px;
+    height: 58px;
+    border-radius: 8px;
+    background-color: #23a200;
+    padding: 3px;
+    margin: 10px;
+  }
+  
+.main_espacio{
+    margin-top: 97px;
+}
+
+/*****quitar estilos******/
+
+button {
+    all: unset; /* Quita todos los estilos heredados y predeterminados */
+  }
+  input {
+    all: unset; /* Quita todos los estilos heredados y predeterminados */
+  }
+/**************ASIDE y MAIN********************/
+/*.wrapper{  
+    display: flex;
+    flex-direction: row;
+}
+    */
+.main{
+    min-height: 100vh;
+    flex-grow: 1;
+    /*width: 100%;*/
+    margin-left: 130px;
+    overflow: hidden;
+    transition: all 0.35s ease-in-out;
+    background-color: white; /*rgb(17, 107, 22);*/
+}
+#sidebar.expand{
+    width: 220px;
+    /*min-width: 260px;*/
+
+}
+#sidebar.expand + .main {
+    margin-left: 219px; /* Ajusta el margen cuando el menú está expandido */
+}
+
+#sidebar{
+    width: 125px;
+    min-width: 120px;
+    z-index: 1000;
+    /*background-color: #6A1B47;*/
+    transition: all .25s ease-in-out;
+
+    overflow-y: auto; /* Permite desplazamiento sin mostrar la barra */
+    scrollbar-width: none; 
+    display: flex;
+    flex-direction: column;
+}
+
+/*h1 {
+    font-size: 40px;
+    color: white;
+    text-align: center;
+    margin-top: 0;
+}
+    */
+

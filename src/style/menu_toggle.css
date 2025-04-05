@@ -1,0 +1,126 @@
+aside{
+    background-color: #6A1B47;
+}
+.sidebar-nav-wrapper .navbar-logo{
+    margin-top: 0px;
+}
+.sidebar-nav-wrapper{
+    padding-top: 25px;
+}
+
+.pl-15:hover{
+    background-color: #d9d9d956;
+    border-bottom: 4px solid #FFFFFF; /*#FFD700 */
+    transform: scale(1.05);
+   
+    /*border-bottom: 2px solid #FFFFFF;*/
+}
+/*los modulos de nav*/
+.sidebar-nav{
+    margin-top: 32px;
+}
+.m-0{
+    color: #FFFFFF;
+}
+
+/*para que funcione el toggle menu*/
+ 
+.wrapper{  
+    display: flex;
+    flex-direction: row;
+}
+.main{
+    min-height: 100vh;
+    flex-grow: 1;
+    /*width: 100%;*/
+    margin-left: 0px;
+    overflow: hidden;
+    transition: all 0.35s ease-in-out;
+    background-color: white; /*rgb(17, 107, 22);*/
+}
+#sidebar.expand{
+    width: 220px;
+    /*min-width: 260px;*/
+
+}
+#sidebar.expand + .main {
+    margin-left: 219px; /* Ajusta el margen cuando el menú está expandido */
+}
+
+#sidebar{
+    width: 125px;
+    min-width: 120px;
+    z-index: 1000;
+    /*background-color: #6A1B47;*/
+    transition: all .25s ease-in-out;
+
+    overflow-y: auto; /* Permite desplazamiento sin mostrar la barra */
+    scrollbar-width: none; 
+    display: flex;
+    flex-direction: column;
+}
+
+/*la otra parte*/
+#toggle_btn{
+    background-color: transparent;
+    cursor: pointer;
+    border: 0;
+    /*padding: 1rem 1.5rem;*/
+}
+
+#sidebar:not(.expand) a.d-flex.align-items-center .m-0
+{
+    display: none;
+}
+#sidebar:not(.expand) #logo_toggle{
+    background: transparent;
+    width: 90px;
+}
+
+/*extra*/
+
+#toggle-btn{
+    all: unset;
+}
+#logo_toggle {
+    background: transparent;
+    width: 200px;
+    transition: opacity 0.2s ease-in-out; /* Para una transición más suave */
+    /*
+    min-width: 70px;
+    height: auto;
+    background-size: cover;  
+    background-position: center;
+    background-repeat: no-repeat;
+    */
+     
+  }
+
+  /*modulos imagenes*/
+.p-2{
+    width: 75px;
+}
+
+.usuario.p-2{
+    width: 72px;
+}
+/*#toggle_menu{
+    background-size: cover;  Para que la imagen cubra todo el contenedor 
+    background-position: center; Para centrar la imagen 
+    background-repeat: no-repeat;  Evita que la imagen se repita 
+    padding: 0;
+    margin: 0;
+    transition: background-image 0.3s ease-in-out;
+}
+
+*/
+/*
+#toggle_menu:hover {
+    background-image: url('/imagenes/isologo_Koten.png');
+    width: 100px;
+    height: 100px;
+    padding: 0;
+    margin: 0;
+    */
+    /*background-position: center; /* Para centrar la imagen */
+    /*background-repeat: no-repeat; /* Evita que la imagen se repita  }*/
