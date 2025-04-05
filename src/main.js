@@ -10,7 +10,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import 'bootstrap/dist/css/lineicons.css';
 /*import 'bootstrap/dist/css/materialdesignicons.min.css';*/
 import 'bootstrap/dist/css/fullcalendar.css';
-import 'bootstrap/dist/css/main.css';
+import 'bootstrap/dist/css/main.css'; // ✅ Esta sí funciona
 /*import "./index.css"*/
 import './style/index_parametros.css';
 /*import {modo} from './plugin/modo_nocturno'*/
