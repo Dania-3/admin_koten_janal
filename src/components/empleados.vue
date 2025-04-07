@@ -1,50 +1,62 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import admin_menu from './menu_admin.vue';
 import footer_admin from './footer.vue';
 import admin_header from './header_admin.vue';
 import {useRouter} from 'vue-router';
 
-// Lista de empleados
 const filter = ref("all");
-const search = ref("");
 const searchQuery = ref('');
+const filteredEmployees = ref([]);
+const errorMensaje =ref('');
 
-var employees= ref([
-        { id: 1, name: 'Sofía Ramírez', position: 'Supervisor', status: 'Activo', salary: 18000, image: '/public/imagenes/Empleado.png' },
-        { id: 2, name: 'Lucas Fernández', position: 'Almacenista', status: 'Inactivo', salary: 15000, image: '/public/imagenes/Empleado.png' },
-        { id: 3, name: 'Camila Torres', position: 'Mesero', status: 'Inactivo', salary: 10000, image: '/public/imagenes/Empleado.png' },
-        { id: 4, name: 'Juan Pérez', position: 'Cajero', status: 'Activo', salary: 8000, image: '/public/imagenes/Empleado.png' },
-        { id: 4, name: 'Juan Pérez', position: 'Cajero', status: 'Activo', salary: 8000, image: '/public/imagenes/Empleado.png' },
-]);
-
-const confirmarAccion = () => {
-  const respuesta = window.confirm("¿Deseas eliminar?");
-  
-  if (respuesta) {
-    alert("Se ha borrado exitosamente.");
-  }
+const fetchEmpleados = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        const response = await fetch("http://localhost:3000/api/empleadosTabla", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+        if(!response.ok) {
+            throw new Error("Error al obtener los empleados");
+        }
+        const data = await response.json();
+        filteredEmployees.value = data.filter(empleado => empleado.estado !== "Eliminado");
+    }catch (error) {
+        console.error("Error al obtener los empleados:", error);
+        errorMensaje.value = "No se pudieron cargar los empleados";
+    }
 };
-    /*const filteredEmployees = computed(()=>{
-        return employees.value.filter(employee=>{
-            if(filter.value=== "all"){
-                return true;
+onMounted(fetchEmpleados);
+
+const confirmarAccion = async (id) => {
+    const respuesta = window.confirm("¿Deseas eliminar este empleado?");
+
+    if(respuesta){
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`http://localhost:3000/api/empleados/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            if(!response.ok){
+                throw new Error("Error al eliminar el empleado");
             }
-            if(FileReader.value=== "Mesero") return employee.position.toLowerCase() === search.value; //toLowerCase() para cadenas de texto convirtiendolo a minusculas
-            return true;
-        })
-    });
-    */
-    
-   const filteredEmployees = computed(() => {
-  return employees.value.filter(employee =>
-    employee.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
-  
-});
-
+            alert("Horario eliminado correctamente.");
+            fetchEmpleados();
+        } catch(error){
+            console.error("Error al eliminar el empleado:", error);
+            alert("No se pudo eliminar el empleado.");
+        }
+    }
+};
 </script>
-
 
 <template>
     <admin_menu />
@@ -70,20 +82,20 @@ const confirmarAccion = () => {
                 
                 <div class="col-12" id="user-list">
                 <div class="employee-container">
-                    <div class="employee-item" v-for="employee in filteredEmployees" :key="employee.id">
-                    <img :src="employee.image" alt="Imagen del empleado"/>
-                    <span class="employee-name">{{ employee.name }}</span>
-                    <span class="employee-position">Puesto:{{ employee.position }}</span>
-                    <span class="employee-status" :class="{ active: employee.status == 'Activo' }">Estatus: {{ employee.status}}</span>
-                    <span class="employee-salary">Saliario: ${{ employee.salary }}MNX</span>
+                    <div class="employee-item" v-for="employee in filteredEmployees" :key="employee.pk_id_empleado">
+                    <img :src="employee.image || '/public/imagenes/Empleado.png'" alt="Imagen del empleado"/>
+                    <span class="employee-name">{{ employee.nombre }}</span>
+                    <span class="employee-position">Puesto:{{ employee.puesto }}</span>
+                    <span class="employee-status" :class="{ active: employee.estatus == 'Activo' }">Estatus: {{ employee.estatus}}</span>
+                    <span class="employee-salary">Salario: ${{ employee.salario }}MNX</span>
                     <div class="employee-actions">
-                    <router-link to="/editar_personal">
+                    <router-link :to="`/editar_personal/${employee.pk_id_empleado}`">
                         <button class="edit-btn">
                             <img src="/public/imagenes/editar.png" id="img_editar"/>
                             <!--i class="fas fa-pencil-alt">Editar</i-->
                         </button>
                     </router-link>
-                    <button @click="confirmarAccion" class="delete-btn">
+                    <button @click="confirmarAccion(employee.id)" class="delete-btn">
                         <img src="/public/imagenes/eliminar.png" id="img_eliminar"/>
                     </button>
                     </div>

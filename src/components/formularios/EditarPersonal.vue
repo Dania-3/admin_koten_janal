@@ -3,19 +3,100 @@ import admin_menu from "../menu_admin.vue";
 import footer_admin from "../footer.vue";
 import admin_header from "../header_admin.vue";
 
-import { ref, computed } from "vue";
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 const form = ref({
-    nombreCompleto: "",
-    fechaNacimiento: "",
-    telefono: "",
+    puesto: "",
+    nombre: "",
+    apellido: "",
     correo: "",
+    telefono: "",
+    direccion: "",
+    fechaNacimiento: "",
     curp: "",
     rfc: "",
-    direccion: "",
-    puesto: " ",
-    salario: "",
+    salario: ""
 });
+
+const obtenerEmpleado = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        const id = route.params.id; // Obtenemos el ID de la URL
+
+        console.log("ID que se enviará a la API:", id);
+
+        const response = await fetch(`http://localhost:3000/api/horarios/${id}`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        console.log("Codigo de respuesta HTTP:", response.status);
+
+        if(!response.ok) {
+            throw new Error("Error al obtener empleado. Codigo: ${response.status}");
+        }
+
+        const empleado = await response.json();
+        console.log("Empleado recibido,", empleado);
+        form.value.puesto = empleado.fk_puesto;
+        form.value.nombre = empleado.nombre;
+        form.value.apellido = empleado.apellido;
+        form.value.correo = empleado.correo;
+        form.value.telefono = empleado.telefono;
+        form.value.direccion = empleado.direccion;
+        form.value.direccion = empleado.direccion;
+        form.value.fechaNacimiento = empleado.fecha_nacimiento;
+        form.value.curp = empleado.curp;
+        form.value.rfc = empleado.rfc;
+        form.value.salario = empleado.salario;
+    } catch (error) {
+        console.error("Error al obtener empleado", error);
+        alert("No se pudo cargar el empleado");
+    }
+};
+
+onMounted(() => {
+    console.log("ID recibido:", route.params.id);
+    obtenerEmpleado();
+});
+
+const actualizarEmpleado = async () => {
+    try {
+    const token = localStorage.getItem("token");
+    const id = route.params.id;
+
+    const response = await fetch(`http://localhost:3000/api/empleados/${id}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        fk_tipo: form.value.puesto,
+          nombre: form.value.nombre,
+          apellido: form.value.apellido,
+          correo: form.value.correo,
+          telefono: form.value.telefono,
+          fecha_nacimiento: form.value.fechaNacimiento,
+          direccion: form.value.direccion,
+          curp: form.value.curp,
+          rfc: form.value.rfc,
+          salario: form.value.salario
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al actualizar el empleado");
+    }
+
+    alert("Horario actualizado correctamente");
+    router.push("/empleados");
+  } catch (error) {
+    console.error("Error al actualizar empleado:", error);
+    alert("No se pudo actualizar el empleado");
+  }
+}
 </script>
 
 <template>
@@ -72,7 +153,7 @@ const form = ref({
                     </div>
                 </div>
 
-                <div class="button-container">
+                <div class="button-container" @click="actualizarEmpleado">
                     <button>ACTUALIZAR</button>
                 </div>
             </div>

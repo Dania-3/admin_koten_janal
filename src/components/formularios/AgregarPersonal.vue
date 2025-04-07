@@ -51,7 +51,7 @@
                   <select class="form-select p-3" v-model="form.puesto" required>
                     <option value="Mesero">Mesero</option>
                     <option value="Cocinero">Cocinero</option>
-                    <option value="Administrador">Administrador</option>
+                    <option value="Administrador">Empleado</option>
                   </select>
                 </div>
   
@@ -73,11 +73,13 @@
   </template>
   
   <script setup>
+
   import { ref } from "vue";
-  
-  const mensaje = ref("");
-  
+  import { useRouter } from "vue-router";
+
+  const router = useRouter();
   const form = ref({
+    puesto: "",
     nombre: "",
     apellido: "",
     correo: "",
@@ -86,29 +88,77 @@
     fechaNacimiento: "",
     curp: "",
     rfc: "",
-    puesto: "Mesero",
     salario: ""
   });
   
-  const agregarPersonal = () => {
-    mensaje.value = "¡Personal agregado exitosamente!";
-    limpiarFormulario();
+  const agregarPersonal = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:3000/api/empleados", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          fk_tipo: form.value.puesto,
+          nombre: form.value.nombre,
+          apellido: form.value.apellido,
+          correo: form.value.correo,
+          telefono: form.value.telefono,
+          fecha_nacimiento: form.value.fechaNacimiento,
+          direccion: form.value.direccion,
+          curp: form.value.curp,
+          rfc: form.value.rfc,
+          salario: form.value.salario,
+        })
+      });
+      if(!response.ok) {
+        throw new Error("Error al agregar al empleado.");
+      }
+      
+      const data = await response.json();
+      alert("Empleado agregado correctamente.");
+      router.push("/empleados");
+    }catch (error) {
+      console.error("Error al agregar al empleado:", error);
+      alert("No se pudo agregar el empleado");
+    }
   };
+  // const mensaje = ref("");
   
-  const limpiarFormulario = () => {
-    form.value = {
-      nombre: "",
-      apellido: "",
-      correo: "",
-      telefono: "",
-      direccion: "",
-      fechaNacimiento: "",
-      curp: "",
-      rfc: "",
-      puesto: "",
-      salario: ""
-    };
-  };
+  // const form = ref({
+  //   nombre: "",
+  //   apellido: "",
+  //   correo: "",
+  //   telefono: "",
+  //   direccion: "",
+  //   fechaNacimiento: "",
+  //   curp: "",
+  //   rfc: "",
+  //   puesto: "Mesero",
+  //   salario: ""
+  // });
+  
+  // const agregarPersonal = () => {
+  //   mensaje.value = "¡Personal agregado exitosamente!";
+  //   limpiarFormulario();
+  // };
+  
+  // const limpiarFormulario = () => {
+  //   form.value = {
+  //     nombre: "",
+  //     apellido: "",
+  //     correo: "",
+  //     telefono: "",
+  //     direccion: "",
+  //     fechaNacimiento: "",
+  //     curp: "",
+  //     rfc: "",
+  //     puesto: "",
+  //     salario: ""
+  //   };
+  // };
   </script>
   
   <style scoped>
