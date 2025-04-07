@@ -73,6 +73,19 @@ const fetchHorarios = async () => {
 
 onMounted(fetchHorarios);
 
+const mostrarModal = ref(false)
+const confirmarAgregar = () =>{
+  alert("agregado exitosamente");
+  mostrarModal.value=false;
+}
+
+const mostrarModal2 = ref(false)
+
+const confirmarEditar = () =>{
+  alert("Modificado exitosamente");
+  mostrarModal2.value=false;
+}
+
 const confirmarAccion = async (id) => {
   const respuesta = window.confirm("¿Deseas eliminar este horario?");
   
@@ -101,32 +114,30 @@ const confirmarAccion = async (id) => {
 };
 </script>
 
+
 <template>
   <admin_menu />
 <div class="main">
     <admin_header />
     <section class="pagina container-fluid main_espacio pl-50 pr-50">
       <div class="row secciones-tablas d-flex justify-content-center">
-        <div class="col-6 gap-5 d-flex justify-content-start align-items-center">
-          <form class="buscador text-start bg-white d-flex gap-4 align-items-center">
-            <input type="text" v-model="searchQuery" placeholder="Buscar" id="barra_buscar" class="w-75" />
-            <button id="buscar">
-              <img src="/public/imagenes/buscador.png" alt="buscador" />
-            </button>
-          </form>
-          <select class="filtros btn" required>
-            <option id="filtrar" value="1">Filtrar</option>
-          </select>
-        </div>
-        <div class="col-6 d-flex justify-content-end align-items-center">
-          <router-link to="/agregar_horario">
-          <button class="btn-verde" id="nuevo">
+        
+        <div class="col-11 gap-5 d-flex justify-content-center align-items-center">
+                <form class="buscador  text-start bg-white d-flex align-items-center w-75">
+                    <input type="text"  v-model="searchQuery"  placeholder="Buscar horario" id="barra_buscar" />
+                    <button id="buscar"> <!--id="buscar"-->
+                    <img src="/public/imagenes/buscador.png" alt="buscador" />
+                    </button>
+                </form>
+            </div>
+
+        <div class="col-1 d-flex justify-content-end align-items-center">
+          <button  @click="mostrarModal = true" class="btn-verde" id="nuevo">
             <img src="/public/imagenes/nuevo.png" id="img_nuevo" />
           </button>
-          </router-link>
         </div>
      
-        <section class="col-6 pt-5">
+        <section class="col-6 pt-5 overflow-auto" style="height: 700px; overflow-y: scroll;">
            <!-- Tabla con barra de desplazamiento -->
            <div class="table-container">
               <table class="rwd-table" id="tabla">
@@ -154,11 +165,9 @@ const confirmarAccion = async (id) => {
                     <td data-th="Correo">{{ dato.hora }}</td>
                     <td data-th="Número">{{ dato.estado }}</td>                
                     <td data-th="Edición">
-                      <router-link :to="`/modificar_horario/${dato.pk_id_horario}`">
-                        <button class="btn-verde">
-                          <img src="/public/imagenes/editar.png" />
+                        <button @click="mostrarModal2 = true"  class="btn-verde"> <!--<router-link :to="`/modificar_horario/${dato.pk_id_horario}`"> </router-link> -->
+                          <img src="/public/imagenes/editar.png" class="img_editar"/>
                         </button>
-                      </router-link>
                       <button @click="confirmarAccion(dato.pk_id_horario)" class="delete-btn">
                         <img src="/public/imagenes/eliminar.png" />
                       </button>
@@ -168,28 +177,56 @@ const confirmarAccion = async (id) => {
               </table>
             </div>
         </section>
-        <!-- <div class="col-12 text-center p-5 d-flex justify-content-center align-items-center">
-          <div class="d-flex flex-row gap-4 text-center">
-            <div class="circulos-flecha">
-              &lt;
-            </div>
-            <div class="circulos text-center p-3">
-              1
-            </div>
-            <div class="circulos text-center p-3">
-              2
-            </div>
-            <div class="circulos text-center p-3">
-              3
-            </div>
-            <div class="circulos text-center p-3">
-              4
-            </div>
-            <div class="circulos-flecha">
-              &gt;
-            </div>
-          </div>
-        </div> -->
+
+
+        <div v-if="mostrarModal" class="modal-backdrop">
+  <div class="modal-content container fluid">
+  
+    <div class="row d-flex justify-content-center">
+      <div class="col-12 justify-content-start d-flex p-0">
+      <button @click="mostrarModal = false" style="width: 20%;">
+        <img src="/public/imagenes/LetsIconsBack.svg" style=" width: 50px;" alt="regresar">
+      </button>
+      <div class="text-white justify-content-start d-flex">
+          <h3>Agregar Horario</h3>
+      </div>
+    </div>
+    <div class="col-12 mt-4 justify-content-center d-flex flex-column">
+      <label class="form-label">Fecha</label>
+      <input type="time" class="form-control" v-model="hora" />
+    </div>
+    
+    <div class="button-container mt-4">
+          <button @click="confirmarAgregar" class="boton-form"><span>agregar</span></button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div v-if="mostrarModal2" class="modal-backdrop">
+  <div class="modal-content container fluid">
+  
+    <div class="row d-flex justify-content-center">
+      <div class="col-12 justify-content-start d-flex p-0">
+      <button @click="mostrarModal2 = false" style="width: 20%;">
+        <img src="/public/imagenes/LetsIconsBack.svg" style=" width: 50px;" alt="regresar">
+      </button>
+      <div class="text-white justify-content-start d-flex">
+          <h3>Modificar Horario</h3>
+      </div>
+    </div>
+    <div class="col-12 mt-4 justify-content-center d-flex flex-column">
+      <label class="form-label">Fecha</label>
+      <input type="time" class="form-control" v-model="hora" />
+    </div>
+    
+    <div class="button-container mt-4">
+          <button @click="confirmarEditar" class="boton-form"><span>MODIFICAR</span></button>
+        </div>
+    </div>
+  </div>
+</div>
+        
       </div>
     </section>
     
@@ -199,12 +236,66 @@ const confirmarAccion = async (id) => {
 </template>
 
 <style scoped>
+/********************,MODAL**************************** */
+h3{
+  color: white;
+}
+.form-control{
+  text-align: center;
+  padding-left: 4px;
+  padding-right:4px;
+}
+.form-label{
+    color: white !important;
+    font-size: 24px;
+    font-family: "Karla", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
 
+.modal-content {
+  background: #6A1B47;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 400px;
+  text-align: center;
+}
+
+
+/********otros estilos**************/
 .table-container {
   max-height: 800px;  /* Ajusta la altura según lo que necesites */
   overflow-y: auto;   /* Agrega la barra de desplazamiento vertical */
   border: 1px solid #ccc;
   margin-bottom: 20px;
+}
+
+/*********buscador*************************/
+.buscador {
+  border: 2px solid #000000;
+  border-radius: 8px;
+  width: 280px;
+  padding: 5px;
+
+}
+    
+#barra_buscar {
+  background-color: white;
+  font-size: 24px;
+  width: 95%;
 }
 
 .rwd-table {
@@ -293,7 +384,7 @@ select option {
 #img_nuevo {
   margin-left: 1px;
 }
-#img_editar{
+.img_editar{
   margin-left: 15px;
 }
 

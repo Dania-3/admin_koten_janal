@@ -47,18 +47,15 @@ const filteredReserve = computed(() => {
     <admin_header />
     <section class="pagina container-fluid main_espacio pl-50 pr-50">
       <div class="row secciones-tablas">
-        <div class="col-6 gap-5 d-flex justify-content-start align-items-center">
-          <form class="buscador text-start bg-white d-flex gap-4 align-items-center">
-            <input type="text" v-model="searchQuery" placeholder="Buscar" id="barra_buscar" class="w-75" />
-            <button id="buscar">
-              <img src="/public/imagenes/buscador.png" alt="buscador" />
-            </button>
-          </form>
-          <select class="filtros btn" required>
-            <option id="filtrar" value="1">Filtrar</option>
-          </select>
-        </div>
-        <div class="col-6 d-flex justify-content-end align-items-center">
+        <div class="col-11 gap-5 d-flex justify-content-center align-items-center">
+                <form class="buscador text-start bg-white d-flex align-items-center w-75">
+                    <input type="text"  v-model="searchQuery"  placeholder="Buscar reserva" id="barra_buscar" />
+                    <button id="buscar"> <!--id="buscar"-->
+                    <img src="/public/imagenes/buscador.png" alt="buscador" />
+                    </button>
+                </form>
+            </div>
+        <div class="col-1 d-flex justify-content-end align-items-center">
           <router-link to="/reservas_agregar">
           <button class="btn-verde" id="nuevo">
             <img src="/public/imagenes/nuevo.png" id="img_nuevo" />
@@ -66,7 +63,7 @@ const filteredReserve = computed(() => {
           </router-link>
         </div>
      
-        <section class="col-12 pt-5">
+        <section class="col-12 pt-5 overflow-auto" style="height: 700px; overflow-y: scroll;">
           <table class="rwd-table" id="tabla">
             <thead>
               <tr>
@@ -96,28 +93,7 @@ const filteredReserve = computed(() => {
             </tbody>
           </table>
         </section>
-        <div class="col-12 text-center p-5 d-flex justify-content-center align-items-center">
-          <div class="d-flex flex-row gap-4 text-center">
-            <div class="circulos-flecha">
-              &lt;
-            </div>
-            <div class="circulos text-center p-3">
-              1
-            </div>
-            <div class="circulos text-center p-3">
-              2
-            </div>
-            <div class="circulos text-center p-3">
-              3
-            </div>
-            <div class="circulos text-center p-3">
-              4
-            </div>
-            <div class="circulos-flecha">
-              &gt;
-            </div>
-          </div>
-        </div>
+        
       </div>
     </section>
     <footer_admin />
@@ -149,6 +125,21 @@ select option {
     background-color: #972020; 
 }
 
+/*******buscador************/
+#barra_buscar {
+  background-color: white;
+  font-size: 24px;
+  width: 95%;
+}
+
+.buscador {
+  border: 2px solid #000000;
+  border-radius: 8px;
+  width: 280px;
+  padding: 5px;
+
+}
+
 .filtros.btn {
   display: flex;
   background-color: black;
@@ -169,18 +160,6 @@ select option {
   background-size: 30px;
 }
 
-#barra_buscar {
-  background-color: white;
-  font-size: 24px;
-}
-
-.buscador {
-  border: 2px solid #000000;
-  border-radius: 8px;
-  width: 280px;
-  padding: 5px;
-
-}
 
 :root {
   --botones: #23a200;

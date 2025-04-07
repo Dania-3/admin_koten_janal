@@ -127,6 +127,9 @@ const submitForm = () => {
 
 <style scoped>
 
+.pl-40{
+  width: 85%;
+}
 /*.form-label input{
   width: 100px;
 }*/

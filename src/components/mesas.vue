@@ -5,7 +5,31 @@ import admin_menu from './menu_admin.vue';
 import footer_admin from './footer.vue';
 import admin_header from './header_admin.vue';
 
+/*import BtnModal from './formularios/ModificarMesa.vue'; /*para el modal */
 
+const mostrarModal = ref(false)
+const mostrarModal2 = ref(false)
+
+
+const confirmarEditar= () => {
+    alert("Se ha modificado exitosamente.");
+    mostrarModal.value= false;
+};
+
+const confirmarAccion= () => {
+    alert("Se ha agregado exitosamente.");
+    mostrarModal2.value= false;
+};
+
+const EliminarElemento = () => {
+  const respuesta = window.confirm("¿Deseas eliminar?");
+  
+  if (respuesta) {
+    alert("Se ha borrado exitosamente.");
+  }
+};
+
+const texto = ref('Hola desde el modaaal');
 const filter =ref("all");
 const searchQuery = ref('');
 var datos = ref([
@@ -13,21 +37,29 @@ var datos = ref([
 {id:2, numero: '10:00', seccion: 'libre', capacidad: '5', estado:'libre', edicion: '/public/imagenes/editar.png'},
 {id:3, numero: '10:00', seccion: 'libre', capacidad: '5', estado:'libre', edicion: '/public/imagenes/editar.png'},
 {id:4, numero: '10:00', seccion: 'libre', capacidad: '5', estado:'libre', edicion: '/public/imagenes/editar.png'},
-
 ]);
 
-/*const datostabla = computed(()=>{
-  return datos.value.filter(dato=>{
-            if(filter.value=== "all"){
-                return true;
-            }
-            if(FileReader.value=== "mesa") return dato.mesa.toLowerCase() === buscar.value;
-            return true;
-            if(FileReader.value=== "hora") return dato.hora.toLowerCase() === buscar.value;
-            return true;
-        })
-});
-*/
+/*const props = defineProps({
+    mensaje: String,
+    mostrar: Boolean
+  })
+  
+  const emit = defineEmits(['cerrar'])
+  
+  const modal = ref(null)
+  
+  const cerrar = () => {
+    modal.value.close()
+    emit('cerrar')
+  }
+  
+  watch(() => props.mostrar, (nuevoValor) => {
+    if (nuevoValor) {
+      modal.value.showModal()
+    } else {
+      modal.value.close()
+    }
+  })*/
 
 </script>
 
@@ -37,26 +69,21 @@ var datos = ref([
     <admin_header />
     <section class="pagina container-fluid main_espacio pl-50 pr-50">
       <div class="row secciones-tablas d-flex justify-content-center">
-        <div class="col-6 gap-5 d-flex justify-content-start align-items-center">
-          <form class="buscador text-start bg-white d-flex gap-4 align-items-center">
-            <input type="text" v-model="searchQuery" placeholder="Buscar" id="barra_buscar" class="w-75" />
-            <button id="buscar">
-              <img src="/public/imagenes/buscador.png" alt="buscador" />
-            </button>
-          </form>
-          <select class="filtros btn" required>
-            <option id="filtrar" value="1">Filtrar</option>
-          </select>
-        </div>
-        <div class="col-6 d-flex justify-content-end align-items-center">
-          <router-link to="/reservas_agregar">
-          <button class="btn-verde" id="nuevo">
+        <div class="col-11 gap-5 d-flex justify-content-center align-items-center">
+                <form class="buscador text-start bg-white d-flex align-items-center w-75">
+                    <input type="text"  v-model="searchQuery"  placeholder="Buscar mesa" id="barra_buscar" />
+                    <button id="buscar"> <!--id="buscar"-->
+                    <img src="/public/imagenes/buscador.png" alt="buscador" />
+                    </button>
+                </form>
+            </div>
+        <div class="col-1 d-flex justify-content-end align-items-center">
+          <button @click="mostrarModal2 = true" class="btn-verde">
             <img src="/public/imagenes/nuevo.png" id="img_nuevo" />
           </button>
-          </router-link>
         </div>
-     
-        <section class="col-6 pt-5">
+
+        <section class="col-6 pt-5 overflow-auto" style="height: 700px; overflow-x: hidden;">
           <table class="rwd-table" id="tabla">
             <thead>
               <tr>
@@ -75,12 +102,18 @@ var datos = ref([
                 <td data-th="Correo">{{dato.seccion}}</td>
                 <td data-th="Correo">{{dato.capacidad}}</td>
                 <td data-th="Número">{{ dato.estado }}</td>                
-                <td data-th="Edición"><router-link to="/modificar_reserva"><button class="btn-verde" id="editar"><img :src="dato.edicion" id="img_editar"/></button> </router-link></td>
+                <td data-th="Edición">
+                <button class="btn-verde editar" @click="mostrarModal = true" ><img :src="dato.edicion" class="img_editar"/></button> 
+                <button class="delete-btn" @click="EliminarElemento"> <!--@click="confirmarAccion(dato.pk_id_horario)" --> <!--<router-link :to="`/modificar_mesa/${dato.id}`"></router-link>-->
+                    <img src="/public/imagenes/eliminar.png" />
+                </button>
+                  </td>
               </tr>
             </tbody>
           </table>
         </section>
-        <div class="col-12 text-center p-5 d-flex justify-content-center align-items-center">
+        
+        <!--div class="col-12 text-center p-5 d-flex justify-content-center align-items-center">
           <div class="d-flex flex-row gap-4 text-center">
             <div class="circulos-flecha">
               &lt;
@@ -101,7 +134,79 @@ var datos = ref([
               &gt;
             </div>
           </div>
+        </div-->
+    <!-- Modal controlado solo por Vue -->
+
+<div v-if="mostrarModal" class="form_nuevo modal-backdrop">
+  <div class="modal-content container fluid">
+  
+    <div class="row d-flex justify-content-center">
+      <div class="col-12 justify-content-start d-flex p-0 gap-3">
+      <button @click="mostrarModal = false" style="width: 20%;">
+        <img src="/public/imagenes/LetsIconsBack.svg" style=" width: 50px;" alt="regresar">
+      </button>
+      <div class="text-white">
+          <h3>Modificar mesa</h3>
+      </div>
+    </div>
+    <div class="col-12 mt-4">
+      <label class="form-label">Número</label>
+      <input type="number" class="form-control" v-model="numero" required>
+    </div>
+    <div class="col-12 mt-4">
+          <label class="form-label">Sección</label>
+          <select class="form-select input-lg" v-model="mesa"required>
+            <option>1-A</option>
+            <option>1-B</option>
+            <option>2-A</option>
+          </select>
         </div>
+    <div class="col-12 mt-4">
+      <label class="form-label">Capacidad</label>
+      <input type="number" class="form-control" v-model="numero" required>
+    </div>
+    <div class="button-container mt-4">
+          <button @click="confirmarEditar" class="boton-form"><span>MODIFICAR</span></button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div v-if="mostrarModal2" class="modal-backdrop">
+  <div class="modal-content container fluid">
+  
+  <div class="row d-flex justify-content-center">
+    <div class="col-12 justify-content-start d-flex p-0 gap-3">
+    <button @click="mostrarModal2 = false" style="width: 20%;">
+      <img src="/public/imagenes/LetsIconsBack.svg" style=" width: 50px;" alt="regresar">
+    </button>
+    <div class="text-white">
+        <h3>Agregar mesa</h3>
+    </div>
+  </div>
+  <div class="col-12 mt-4">
+    <label class="form-label">Número</label>
+    <input type="number" class="form-control" v-model="numero" required>
+  </div>
+  <div class="col-12 mt-4">
+        <label class="form-label">Sección</label>
+        <select class="form-select input-lg" v-model="mesa"required>
+          <option>1-A</option>
+          <option>1-B</option>
+          <option>2-A</option>
+        </select>
+      </div>
+  <div class="col-12 mt-4">
+    <label class="form-label">Capacidad</label>
+    <input type="number" class="form-control" v-model="numero" required>
+  </div>
+  <div class="button-container mt-4">
+        <button @click="confirmarAccion" class="boton-form"><span>AGREGAR</span></button>
+      </div>
+  </div>
+</div>
+</div>
+
       </div>
     </section>
     <footer_admin />
@@ -109,8 +214,45 @@ var datos = ref([
 
 </template>
 
+
 <style scoped>
 
+h3{
+  color: white !important;
+
+}
+.form-control{
+  text-align: center;
+  padding-left: 5px;
+  padding-right:5px;
+}
+.form-select{
+  text-align: center;
+  padding-left: 5px;
+  padding-right:5px;
+}
+.form-label{
+    color: white !important;
+    font-size: 24px;
+    font-family: "Karla", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+/********buscador**********/
+#barra_buscar {
+  background-color: white;
+  font-size: 24px;
+  width: 95%;
+}
+
+.buscador {
+  border: 2px solid #000000;
+  border-radius: 8px;
+  width: 280px;
+  padding: 5px;
+
+}
 .rwd-table {
 
   min-width: 900px;
@@ -120,6 +262,14 @@ var datos = ref([
   /*background-color: #23a200;*/
   height: 800px;
 
+}
+/* Codigo Gael */
+.delete-btn {
+    background-color: #D64040;
+    font-family: 'Merriweather';
+    color: white;
+    padding: 17px;
+    border-radius: 10px;
 }
 
 select,
@@ -146,7 +296,7 @@ select option {
   background-image: url(/public/imagenes/flecha.png);
   background-size: 30px;
 }
-
+/**********buscador***************/
 #barra_buscar {
   background-color: white;
   font-size: 24px;
@@ -167,9 +317,31 @@ select option {
 #img_nuevo {
   margin-left: 1px;
 }
-#img_editar{
+.img_editar{
   margin-left: 15px;
 }
+/********************,MODAL**************************** */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #6A1B47;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 400px;
+  text-align: center;
+}
+
 
 /*********************botones y circulos******************/
 

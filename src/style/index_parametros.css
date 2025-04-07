@@ -56,7 +56,7 @@ h5{
     font-weight: 400;
     font-style: normal;
     font-size: 24px;
-    color: var(--auxiliar1);
+    /*color: var(--auxiliar1);*/
 }
 h6{
     font-family: "Karla", sans-serif;
@@ -148,7 +148,7 @@ table {
 
 
   /*otros estilos*/
-  
+
 .btn-verde {
     width: 65px;
     height: 58px;
@@ -162,11 +162,43 @@ table {
     margin-top: 97px;
 }
 
+/*botones formularios*/
+
+.boton-form {
+    background-color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    border: 3px solid black;
+    padding: 15px;
+}
+
+.boton-form:hover{
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    background-color: black;
+}
+.boton-form:hover span{
+    color: white !important;
+}
+
+.boton-form span{
+    font-family: "Karla", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 24px;
+    color: black;
+}
+
+
 /*****quitar estilos******/
 
 button {
-    all: unset; /* Quita todos los estilos heredados y predeterminados */
-  }
+    all: unset; /* Quita todos los estilos heredados y predeterminados */  }
   input {
     all: unset; /* Quita todos los estilos heredados y predeterminados */
   }
@@ -207,11 +239,5 @@ button {
     flex-direction: column;
 }
 
-/*h1 {
-    font-size: 40px;
-    color: white;
-    text-align: center;
-    margin-top: 0;
-}
-    */
+
 

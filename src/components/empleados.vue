@@ -53,8 +53,8 @@ const confirmarAccion = () => {
         <div class="container-fluid  pl-50 pr-50 main_espacio">
             <div class="row">
                 <div class="col-11 gap-5 d-flex justify-content-center align-items-center">
-                <form class="buscador  text-start bg-white d-flex align-items-center w-75">
-                    <input type="text"  v-model="searchQuery"  placeholder="Buscar Empleado" id="barra_buscar" />
+                <form class="buscador text-start bg-white d-flex align-items-center w-75">
+                    <input type="text"  v-model="searchQuery"  placeholder="Buscar empleado" id="barra_buscar" />
                     <button id="buscar"> <!--id="buscar"-->
                     <img src="/public/imagenes/buscador.png" alt="buscador" />
                     </button>
@@ -69,7 +69,7 @@ const confirmarAccion = () => {
                 </div>
                 
                 <div class="col-12" id="user-list">
-                <div class="employee-container">
+                <div class="employee-container overflow-auto" style="height: 780px; overflow-y: scroll;">
                     <div class="employee-item" v-for="employee in filteredEmployees" :key="employee.id">
                     <img :src="employee.image" alt="Imagen del empleado"/>
                     <span class="employee-name">{{ employee.name }}</span>
