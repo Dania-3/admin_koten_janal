@@ -137,7 +137,7 @@ const form = ref({
         </div>
 
         <div class="button-container">
-          <button class="boton-form"><span>ACTUALIZAR</span></button>
+          <button class="boton-form"><span>actualizar</span></button>
         </div>
       </div>
     </div>

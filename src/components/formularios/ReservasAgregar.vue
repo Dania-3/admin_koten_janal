@@ -75,7 +75,7 @@ import 'sweetalert2/dist/sweetalert2.min.css'
 const showAgregar =() =>{
   Swal.fire({
     title: '¡Buen trabajo!',
-    text: 'Se ha modificado exitosamente',
+    text: 'Se ha agregado exitosamente',
     icon: 'success',
     confirmButtonText: 'continuar'
   });

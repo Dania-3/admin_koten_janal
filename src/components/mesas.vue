@@ -181,7 +181,7 @@ var datos = ref([
       <input type="number" class="form-control" v-model="numero" required>
     </div>
     <div class="button-container mt-4">
-          <button @click="showEditar" class="boton-form"><span>MODIFICAR</span></button>
+          <button @click="showEditar" class="boton-form"><span>modificar</span></button>
         </div>
     </div>
   </div>
@@ -216,7 +216,7 @@ var datos = ref([
     <input type="number" class="form-control" v-model="numero" required>
   </div>
   <div class="button-container mt-4">
-        <button @click="showAgregar" class="boton-form"><span>AGREGAR</span></button>
+        <button @click="showAgregar" class="boton-form"><span>agregar</span></button>
       </div>
   </div>
 </div>

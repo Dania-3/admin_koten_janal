@@ -70,8 +70,8 @@
                   <input type="number" class="form-control p-3" v-model="form.salario" required>
                 </div>
   
-                <div class="col-md-4">
-                  <button type="submit" class="form_color border-white btn w-100 p-3 m-1"><h3>AGREGAR</h3></button>
+                <div class="col-md-4 d-flex justify-content-center align-items-center">
+                  <button class="boton-form"><span>agregar</span></button>
                 </div>
               </div>
             </form>
@@ -121,7 +121,11 @@
   };
   </script>
   
+
   <style scoped>
+.boton-form {
+  margin-top: 40px;
+}
 
 .form_color{
     background-color: #44112e;
