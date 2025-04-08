@@ -60,6 +60,7 @@ const CerrarSesion =()=>{
       document.body.appendChild(script)
     },
   confirmButtonText: "cerrar sesion",
+  cancelButtonText: "cancelar",
   customClass: {
     confirmButton: 'btn-confirm-green',
     cancelButton: 'btn-cancel'
