@@ -9,6 +9,8 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import {modo} from "../plugin/modo_nocturno";
 
+import Swal from 'sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css'
 
 const router = useRouter();
 const irAReservas = () => {
@@ -34,6 +36,46 @@ const desplazar_menu = () => {
 onMounted(() => {
   modo(); // Inicializa el comportamiento de modo nocturno
 });
+
+/************alerta**************/
+const CerrarSesion =()=>{
+  Swal.fire({
+  html: `
+  <h3 style="padding-bottom: 20px;">¿Quiere cerrar sesión?</h3>
+  <div style="display: flex; justify-items: center; flex-direction: column;align-items: center;">
+      <animated-icons
+  src="https://animatedicons.co/get-icon?name=exit&style=minimalistic&token=6e09845f-509a-4b0a-a8b0-c47e168ad977"
+  trigger="click"
+  attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
+  height="150"
+  width="150"
+></animated-icons>
+<p style= "color: #6B6767">Si deseas salir, haz clic en cerrar sesión. De lo contrario, selecciona cancelar para continuar trabajando.</p>
+    `,
+  showCancelButton: true,
+  didOpen: () => {
+      // Cargar el script dinámicamente solo cuando se abre la alerta
+      const script = document.createElement('script')
+      script.src = 'https://animatedicons.co/scripts/embed-animated-icons.js'
+      document.body.appendChild(script)
+    },
+  confirmButtonText: "cerrar sesion",
+  customClass: {
+    confirmButton: 'btn-confirm-green',
+    cancelButton: 'btn-cancel'
+  },
+  buttonsStyling: false
+}).then((result) => {
+  if (result.isConfirmed) {
+    Swal.fire({
+      title: "Se ha cerrado sesión",
+      icon: "success"
+    });
+  }
+});
+}
+
+
 
 
 
@@ -97,7 +139,7 @@ onMounted(() => {
             </a>
           </li>
           <li class="pl-15">
-            <a href="#0" aria-controls="ddmenu_1" aria-expanded="false" aria-label="Toggle navigation"
+            <a @click="CerrarSesion" href="#0" aria-controls="ddmenu_1" aria-expanded="false" aria-label="Toggle navigation"
               class="d-flex align-items-center">
               <img src="/imagenes/salir.png" class="p-2" />
               <p class="m-0">Salir</p>
@@ -107,3 +149,33 @@ onMounted(() => {
       </nav>
     </aside>
 </template>
+<style>
+
+.btn-confirm-green {
+  margin-right: 10px;
+  background-color: white;
+  color: #26C347;
+  border: 2px solid #26C347;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+.btn-confirm-green:hover {
+  background-color: #218838;
+  color: white;
+}
+
+.btn-cancel {
+  background-color: white;
+  color: #F11818;
+  border: 2px solid #F11818;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+.btn-cancel:hover {
+  background-color: #F11818;
+  color: white;
+}
+
+</style>

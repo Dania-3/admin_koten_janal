@@ -1,8 +1,18 @@
 <template>
-    <div class="container-fluid d-flex justify-content-center align-items-center vh-100">
+    <div class="main_espacio container-fluid d-flex justify-content-center align-items-center vh-100">
       <div class="row justify-content-center">
         <div class="col-md-8 col-lg-10 h-75">
           <div class="form_color text-white card shadow-lg p-4 rounded">
+      <router-link to="/empleados">
+        <button>
+          <img
+            src="/public/imagenes/LetsIconsBack.svg"
+            class="pl-40"
+            style="width: 90%;"
+            alt="regresar"
+          />
+        </button>
+      </router-link>
             <h2 class="text-center mb-5 text-white p-3">Agregar personal</h2>
             <form @submit.prevent="agregarPersonal" class="rounded">
               <div class="row d-flex gap-4 justify-content-center">
@@ -114,7 +124,7 @@
   <style scoped>
 
 .form_color{
-    background-color: #480028;
+    background-color: #44112e;
 }
 h3{
     color:white;

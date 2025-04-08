@@ -6,7 +6,7 @@
     </button>
   </router-link>
     <div class="d-flex justify-content-center align-items-center">
-    <form @submit.prevent="submitForm" class="form1 text-white">
+    <form @submit.prevent="showAgregar" class="form1 text-white">
       <h2 class="text-center text-white">Agregar reservación</h2>
       <div class="row m-5 d-flex justify-content-center">
         <div class="col-md-3">
@@ -59,7 +59,7 @@
         </div>
       </div>
       <div class="text-center">
-        <button type="submit" class="btn btn-custom text-white p-4"><h4>AGREGAR</h4></button>
+        <button type="submit" class="btn btn-custom text-white p-4"><h4>agregar</h4></button>
       </div>
     </form>
     </div>
@@ -68,6 +68,18 @@
 
 <script setup>
 import { ref } from "vue";
+
+import Swal from 'sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css'
+
+const showAgregar =() =>{
+  Swal.fire({
+    title: '¡Buen trabajo!',
+    text: 'Se ha modificado exitosamente',
+    icon: 'success',
+    confirmButtonText: 'continuar'
+  });
+}
 
 const form = ref({
   nombre: "",
@@ -80,6 +92,7 @@ const form = ref({
   comensales: "1 comensal",
   comentario: "",
 });
+
 
 const submitForm = () => {
   console.log("Formulario enviado", form.value);

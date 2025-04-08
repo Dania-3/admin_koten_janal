@@ -5,16 +5,31 @@ import admin_menu from './menu_admin.vue';
 import footer_admin from './footer.vue';
 import admin_header from './header_admin.vue';
 
+import Swal from 'sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css'
+
+const showEditar = () => {
+  Swal.fire({
+    title: '¡Buen trabajo!',
+    text: 'Se ha modificado exitosamente',
+    icon: 'success',
+    confirmButtonText: 'continuar'
+  })
+}
+const showAgregar =() =>{
+  Swal.fire({
+    title: '¡Buen trabajo!',
+    text: 'Se ha agregado exitosamente',
+    icon: 'success',
+    confirmButtonText: 'continuar'
+  });
+}
 /*import BtnModal from './formularios/ModificarMesa.vue'; /*para el modal */
 
 const mostrarModal = ref(false)
 const mostrarModal2 = ref(false)
 
 
-const confirmarEditar= () => {
-    alert("Se ha modificado exitosamente.");
-    mostrarModal.value= false;
-};
 
 const confirmarAccion= () => {
     alert("Se ha agregado exitosamente.");
@@ -166,7 +181,7 @@ var datos = ref([
       <input type="number" class="form-control" v-model="numero" required>
     </div>
     <div class="button-container mt-4">
-          <button @click="confirmarEditar" class="boton-form"><span>MODIFICAR</span></button>
+          <button @click="showEditar" class="boton-form"><span>MODIFICAR</span></button>
         </div>
     </div>
   </div>
@@ -201,7 +216,7 @@ var datos = ref([
     <input type="number" class="form-control" v-model="numero" required>
   </div>
   <div class="button-container mt-4">
-        <button @click="confirmarAccion" class="boton-form"><span>AGREGAR</span></button>
+        <button @click="showAgregar" class="boton-form"><span>AGREGAR</span></button>
       </div>
   </div>
 </div>

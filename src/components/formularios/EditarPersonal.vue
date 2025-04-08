@@ -5,6 +5,7 @@ import admin_header from "../header_admin.vue";
 
 import { ref, computed } from "vue";
 
+
 const form = ref({
   nombreCompleto: "",
   fechaNacimiento: "",
