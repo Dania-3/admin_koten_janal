@@ -37,44 +37,13 @@ onMounted(() => {
   modo(); // Inicializa el comportamiento de modo nocturno
 });
 
-/************alerta**************/
-// const CerrarSesion =()=>{
-//   Swal.fire({
-//   html: `
-//   <h3 style="padding-bottom: 20px;">¿Quiere cerrar sesión?</h3>
-//   <div style="display: flex; justify-items: center; flex-direction: column;align-items: center;">
-//       <animated-icons
-//   src="https://animatedicons.co/get-icon?name=exit&style=minimalistic&token=6e09845f-509a-4b0a-a8b0-c47e168ad977"
-//   trigger="click"
-//   attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
-//   height="150"
-//   width="150"
-// ></animated-icons>
-// <p style= "color: #6B6767">Si deseas salir, haz clic en cerrar sesión. De lo contrario, selecciona cancelar para continuar trabajando.</p>
-//     `,
-//   showCancelButton: true,
-//   didOpen: () => {
-//       // Cargar el script dinámicamente solo cuando se abre la alerta
-//       const script = document.createElement('script')
-//       script.src = 'https://animatedicons.co/scripts/embed-animated-icons.js'
-//       document.body.appendChild(script)
-//     },
-//   confirmButtonText: "cerrar sesion",
-//   cancelButtonText: "cancelar",
-//   customClass: {
-//     confirmButton: 'btn-confirm-green',
-//     cancelButton: 'btn-cancel'
-//   },
-//   buttonsStyling: false
-// }).then((result) => {
-//   if (result.isConfirmed) {
-//     Swal.fire({
-//       title: "Se ha cerrado sesión",
-//       icon: "success"
-//     });
-//   }
-// });
-// }
+const nombre = ref('');
+const puesto = ref('');
+
+onMounted(() => {
+  nombre.value = localStorage.getItem('nombre') || 'Usuario';
+  puesto.value = localStorage.getItem('puesto') || 'Rol';
+});
 
 const CerrarSesion = () => {
   Swal.fire({
@@ -108,7 +77,9 @@ const CerrarSesion = () => {
   }).then((result) => {
     if (result.isConfirmed) {
       // Eliminar el token del localStorage
-      localStorage.removeItem("token");
+      localStorage.removeItem('token');
+      localStorage.removeItem('nombre');
+      localStorage.removeItem('puesto');
 
       // Notificación de éxito
       Swal.fire({
@@ -178,8 +149,8 @@ const CerrarSesion = () => {
               class="d-flex align-items-center gap-2">
               <img src="/imagenes/usuarios.png" class="usuario p-2" />
               <div class="d-flex flex-column">
-                <p class="m-0 pb-2">Angel Chi</p>
-                <h6 class="m-0">Administrador</h6>
+                <p class="m-0 pb-2">{{ nombre }}</p>
+                <h6 class="m-0">{{ puesto }}</h6>
               </div>
             </a>
           </li>

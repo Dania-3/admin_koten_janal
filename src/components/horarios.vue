@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import admin_menu from './menu_admin.vue';
 import footer_admin from './footer.vue';
 import admin_header from './header_admin.vue';
@@ -146,6 +146,16 @@ const fetchHorario = async () => {
   }
 }
 onMounted(fetchHorario);
+
+const datosFiltrados = computed(() => {
+  const query = searchQuery.value.toLowerCase();
+  return datos.value.filter((item) =>
+    Object.values(item).some(val =>
+      String(val).toLowerCase().includes(query)
+    )
+  );
+});
+
 </script>
 
 

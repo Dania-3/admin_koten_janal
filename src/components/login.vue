@@ -92,6 +92,8 @@
   
       if (data.token) {
         localStorage.setItem("token", data.token);
+        localStorage.setItem("nombre", data.nombre);
+        localStorage.setItem("puesto", data.puesto);
         alert("Inicio de sesión exitoso");
         router.push("/admin");
       } else {
