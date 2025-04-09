@@ -48,7 +48,7 @@ const confirmarAccion = async (id) => {
             if(!response.ok){
                 throw new Error("Error al eliminar el empleado");
             }
-            alert("Horario eliminado correctamente.");
+            alert("Empleado eliminado correctamente.");
             fetchEmpleados();
         } catch(error){
             console.error("Error al eliminar el empleado:", error);
@@ -81,12 +81,12 @@ const confirmarAccion = async (id) => {
                 </div>
                 
                 <div class="col-12" id="user-list">
-                <div class="employee-container">
+                <div class="employee-container overflow-auto" style="height: 780px; overflow-y: scroll;">
                     <div class="employee-item" v-for="employee in filteredEmployees" :key="employee.pk_id_empleado">
                     <img :src="employee.image || '/public/imagenes/Empleado.png'" alt="Imagen del empleado"/>
                     <span class="employee-name">{{ employee.nombre }}</span>
                     <span class="employee-position">Puesto:{{ employee.puesto }}</span>
-                    <span class="employee-status" :class="{ active: employee.estatus == 'Activo' }">Estatus: {{ employee.estatus}}</span>
+                    <span class="employee-status" :class="{ active: employee.estatus == 'Activo' }">Estado: {{ employee.estatus}}</span>
                     <span class="employee-salary">Salario: ${{ employee.salario }}MNX</span>
                     <div class="employee-actions">
                     <router-link :to="`/editar_personal/${employee.pk_id_empleado}`">
@@ -95,7 +95,7 @@ const confirmarAccion = async (id) => {
                             <!--i class="fas fa-pencil-alt">Editar</i-->
                         </button>
                     </router-link>
-                    <button @click="confirmarAccion(employee.id)" class="delete-btn">
+                    <button @click="confirmarAccion(employee.pk_id_empleado)" class="delete-btn">
                         <img src="/public/imagenes/eliminar.png" id="img_eliminar"/>
                     </button>
                     </div>

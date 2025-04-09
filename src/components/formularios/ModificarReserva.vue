@@ -6,12 +6,12 @@
     </button>
   </router-link>
   <div class="d-flex justify-content-center align-items-center">
-    <form @submit.prevent="submitForm" class="form1 text-white">
+    <form @submit.prevent="actualizarReserva" class="form1 text-white">
       <h2 class="text-center text-white">Modificar reservación</h2>
       <div class="row mt-5 d-flex gap-4 justify-content-center">
-        <div class="col-5 d-flex flex-column justify-content-center align-items-center">
+        <div class="col-5 d-flex flex-column justify-content-center align-items-center ">
           <div class="row d-flex gap-3  justify-content-center">
-            <div class="col-md-3">
+            <div class="col-md-3  info">
           <label class="form-label">Nombre:</label>
           <input
             type="text"
@@ -20,7 +20,7 @@
             placeholder="Nombre"
           />
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 apellido">
           <label class="form-label">Apellido:</label>
           <input
             type="text"
@@ -29,7 +29,7 @@
             placeholder="Apellido"
           />
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 apellido">
           <label class="form-label">Teléfono:</label>
           <input
             type="tel"
@@ -39,10 +39,10 @@
           />
         </div>
       </div>
-      <div class="row m-5 d-flex gap-5 justify-content-center">
+      <div class="row m-5 d-flex gap-5 justify-content-center informacion">
         <div class="col-3">
           <label class="form-label">Correo:</label>
-          <input
+          <input 
             type="email"
             class="form-control"
             v-model="form.correo"
@@ -55,34 +55,36 @@
         </div>
         <div class="col-3">
           <label class="form-label">Hora:</label>
-          <input type="time" class="form-control" v-model="form.hora" />
+          <select class="form-select input-lg hora" v-model="form.hora">
+              <option v-for="hora in horas" :key="hora.hora" :value="hora.hora">
+                {{ hora.hora }}
+              </option>
+            </select>
         </div>
           </div>
-          <div class="row d-flex gap-4 m-0 justify-content-center">
+          <div class="row d-flex gap-4 m-0 justify-content-center informaciones">
             <div class="col-md-3">
           <label class="form-label">Mesa:</label>
-          <select class="form-select input-lg" v-model="form.mesa">
-            <option>1-A</option>
-            <option>1-B</option>
-            <option>2-A</option>
+          <select class="form-select input-lg mesa" v-model="form.mesa">
+            <option v-for="mesa in mesas" :key="mesa.numero_mesa" :value="mesa.numero_mesa + ' - ' + mesa.seccion_mesa">
+                {{ mesa.seccion_mesa }} - {{ mesa.numero_mesa }}
+              </option>
           </select>
         </div>
         <div class="col-md-3">
           <label class="form-label">Comensales:</label>
-          <select class="form-select input-lg" v-model="form.comensales">
-            <option>1 comensal</option>
-            <option>2 comensales</option>
-            <option>3 comensales</option>
-          </select>
+          <input type="number" class="form-control comensales" v-model="form.comensales"/>
         </div>
         <div class="col-md-3">
           <label class="form-label">Estatus:</label>
-          <select class="form-select input-lg" v-model="form.mesa">
+          <input type="text" class="form-control" v-model="form.estatus"/>
+
+          <!-- <select class="form-select input-lg" v-model="form.mesa">
             <option>Libre</option>
             <option>Reservado</option>
             <option>Ocupado</option>
             <option>Eliminado</option>
-          </select>
+          </select> -->
         </div>
           </div>
         </div>
@@ -97,7 +99,7 @@
         </div>
       </div>
       <div class="text-center">
-        <button type="submit" class="btn btn-custom text-white m-5 p-4"><h4>AGREGAR</h4></button>
+        <button type="submit" class="btn btn-custom text-white m-5 p-4"><h4>ACTUALIZAR</h4></button>
       </div>
     </form>
     </div>
@@ -105,28 +107,159 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
+
+const mesas = ref([]);
+const horas = ref([]);
+
+// Función para cargar las mesas desde el backend
+const obtenerMesas = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://localhost:3000/api/mesasDisp", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+    if (!response.ok) {
+      throw new Error("No se pudieron obtener las mesas");
+    }
+    const data = await response.json();
+    mesas.value = data;
+  } catch (error) {
+    console.error("Error al obtener las mesas:", error);
+    alert("No se pudieron obtener las mesas");
+  }
+};
+onMounted(obtenerMesas);
+
+const obtenerHoras = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://localhost:3000/api/horariosDisp", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+    if (!response.ok) {
+      throw new Error("No se pudieron obtener las horas");
+    }
+    const data = await response.json();
+    horas.value = data;
+  } catch (error) {
+    console.error("Error al obtener las horas:", error);
+    alert("No se pudieron obtener las horas");
+  }
+};
+onMounted(obtenerHoras);
 
 const form = ref({
-        nombre: "",
-        apellido: "",
-        telefono: "",
-        correo: "",
-        fecha: "",
-        hora: "",
-        mesa: "",/*1-A */
-        comensales: "",/*1 comensal */
-        comentario: "",
+  nombre: "",
+  apellido: "",
+  telefono: "",
+  correo: "",
+  fecha: "",
+  hora: "",
+  mesa: "",
+  comensales: "",
+  comentario: "",
+  estatus: ""
 });
 
-const submitForm = () => {
-      console.log("Formulario enviado", form.value);
-      alert("Reservación agregada con éxito");
+const obtenerReserva = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const id = route.params.id; // Obtenemos el ID de la URL
+
+    console.log("ID que se enviará a la API:", id);
+
+    const response = await fetch(`http://localhost:3000/api/reservaciones/${id}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    console.log("Codigo de respuesta HTTP:", response.status);
+
+    if(!response.ok) {
+      throw new Error("Error al obtener reservacion. Codigo: ${response.status}");
+    }
+
+    const reserva = await response.json();
+    console.log("reservacion recibida,", reserva);
+    form.value.nombre = reserva.nombre;
+    form.value.apellido = reserva.apellido;
+    form.value.telefono = reserva.telefono;
+    form.value.correo = reserva.correo;
+    form.value.fecha = reserva.fecha;
+    form.value.hora = reserva.hora;
+    form.value.mesa = reserva.mesa;
+    form.value.comensales = reserva.comensales;
+    form.value.comentario = reserva.comentario;
+    form.value.estatus = reserva.estatus;
+  } catch (error) {
+    console.error("Error al obtener la reservacion", error);
+    alert("No se pudo cargar la reservacion");
+  }
 };
+
+onMounted(() => {
+    console.log("ID recibido:", route.params.id);
+    obtenerReserva();
+});
+
+const actualizarReserva = async () => {
+    try {
+    const token = localStorage.getItem("token");
+    const id = route.params.id;
+
+    const [nombre, apellido] = form.value.nombre.split(" ");
+
+    const response = await fetch(`http://localhost:3000/api/reservaciones/${id}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        nombre: nombre,
+        apellido: apellido,
+        telefono: form.value.telefono,
+        correo: form.value.correo,
+        fecha: form.value.fecha,
+        hora: form.value.hora,
+        mesa: form.value.mesa,
+        comensales: form.value.comensales,
+        estatus: form.value.estatus,
+        comentario: form.value.comentario
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al actualizar la reservacion");
+    }
+
+    alert("Reservacion actualizado correctamente");
+    router.push("/reservas");
+  } catch (error) {
+    console.error("Error al actualizar reservacion:", error);
+    alert("No se pudo actualizar la reservacion");
+  }
+}
 </script>
 
 <style scoped>
 
+.pl-40{
+  width: 85%;
+}
 /*.form-label input{
   width: 100px;
 }*/
@@ -141,19 +274,31 @@ body {
   background-color: #6A1B47;
   color: white;
 }
-.input-lg {
-  font-size: 1.3rem;
-  padding-left: 42px;
-  padding-right: 42px;
+.apellido{
+  width: 226px;
+  margin-left: 30px;
 
 }
+.info{
+  width: 226px;
+  margin-left: 0px;
+
+}
+.informaciones{
+  width: 1000px;
+ padding-left: 20px;
+
+}
+.informacion{
+  width: 890px;
+  margin-left: -60px;
+}
 .container-fluid {
-  /*max-width: 1914px;*/
-  min-height: 1095px;
-  background: #6A1B47;
-  padding: 20px;
-  /*border-radius: 10px;*/
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  min-height: 950px;
+  background: #6a1b47;
+  padding: 10px;
+  margin-top: 80px;
+  width: 90%;
 }
 .comentario{
     height: 300px;
@@ -164,6 +309,6 @@ body {
   border: 2px solid white;
 }
 .btn-custom:hover {
-  background-color:#6A1B47;
+  background-color:#8e76838a;
 }
 </style>

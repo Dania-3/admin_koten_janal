@@ -1,79 +1,95 @@
-<!-- <script setup>
-// estructura para funciones
-import { ref } from "vue";
-import admin_menu from './menu_admin.vue';
-import footer_admin from './footer.vue';
-import admin_header from './header_admin.vue';
-
-
-const filter =ref("all");
-const searchQuery = ref('');
-var datos = ref([
-{id:1, hora: '10:00', estado: 'libre', edicion: '/public/imagenes/editar.png'},
-{id:1, hora: '10:00', estado: 'libre', edicion: '/public/imagenes/editar.png'},
-{id:1, hora: '10:00', estado: 'libre', edicion: '/public/imagenes/editar.png'},
-{id:1, hora: '10:00', estado: 'libre', edicion: '/public/imagenes/editar.png'},
-]);
-const confirmarAccion = () => {
-  const respuesta = window.confirm("¿Deseas eliminar?");
-  
-  if (respuesta) {
-    alert("Se ha borrado exitosamente.");
-  }
-};
-/*const datostabla = computed(()=>{
-  return datos.value.filter(dato=>{
-            if(filter.value=== "all"){
-                return true;
-            }
-            if(FileReader.value=== "mesa") return dato.mesa.toLowerCase() === buscar.value;
-            return true;
-            if(FileReader.value=== "hora") return dato.hora.toLowerCase() === buscar.value;
-            return true;
-        })
-});
-*/
-
-</script> -->
-
 <script setup>
 import { ref, onMounted } from "vue";
 import admin_menu from './menu_admin.vue';
 import footer_admin from './footer.vue';
 import admin_header from './header_admin.vue';
 
-const filter = ref("all");
-const searchQuery = ref('');
-const datos = ref([]);
-const errorMensaje = ref('');
+const mostrarModal = ref(false)
+const mostrarModal2 = ref(false)
 
-const fetchHorarios = async () => {
-  try {
-    const token = localStorage.getItem("token");
-    const response = await fetch("http://localhost:3000/api/horarios", {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+const hora = ref('');
+const estado = ref('');
+const horaSeleccionada = ref(null);
 
-    if (!response.ok) {
-      throw new Error("Error al obtener los horarios");
-    }
+const cargarHora = (horaId) => {
+  const horaEditar = datos.value.find(hora => hora.pk_id_horario === horaId);
+  
+  if (horaEditar) {
+    // Guarda los datos de la mesa en las variables del formulario
+    horaSeleccionada.value = horaEditar; // Puedes usar esto para cualquier lógica adicional si lo necesitas
+    hora.value = horaEditar.hora;
+    estado.value = horaEditar.estado;
 
-    const data = await response.json();
-    // datos.value = data;
-    datos.value = data.filter(horario => horario.estado !== "Eliminado");
-  } catch (error) {
-    console.error("Error al obtener horarios:", error);
-    errorMensaje.value = "No se pudieron cargar los horarios.";
+    // Muestra el modal
+    mostrarModal2.value = true;
   }
 };
 
-onMounted(fetchHorarios);
 
-const confirmarAccion = async (id) => {
+const confirmarEditar = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`http://localhost:3000/api/horarios/${horaSeleccionada.value.pk_id_horario}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        hora: hora.value,
+        estado: estado.value
+      })
+    });
+
+    // Verificamos si la respuesta es exitosa
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Error al modificar el horario');
+    }
+
+    const data = await response.json();
+    alert(data.message);  // Mensaje de éxito
+    mostrarModal2.value = false;  // Cierra el modal
+    fetchHorario();  // Recarga la lista de mesas
+  } catch (error) {
+    console.error("Error al modificar el horario:", error);
+    alert(error.message || "No se pudo modificar el horario");
+  }
+};
+
+
+
+const confirmarAccion= async () => {
+  try {
+      const token = localStorage.getItem("token"); // Obtén el token del localStorage
+      const response = await fetch("http://localhost:3000/api/horarios", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          hora: hora.value,
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al agregar la mesa");
+      }
+
+      const data = await response.json();
+      alert("Horario agregado correctamente");
+      //router.push("/me");
+      mostrarModal.value= false;
+      fetchHorario();
+    } catch (error) {
+      console.error("Error al agregar el horario:", error);
+      alert("No se pudo agregar el horario");
+    }
+    
+};
+
+const EliminarElemento = async (id) => {
   const respuesta = window.confirm("¿Deseas eliminar este horario?");
   
   if (respuesta) {
@@ -92,14 +108,46 @@ const confirmarAccion = async (id) => {
       }
 
       alert("Horario eliminado correctamente.");
-      fetchHorarios(); // Recargar la lista de horarios
+      fetchHorario(); // Recargar la lista de horarios
     } catch (error) {
       console.error("Error al eliminar horario:", error);
       alert("No se pudo eliminar el horario.");
     }
   }
 };
+
+const texto = ref('Hola desde el modaaal');
+const filter =ref("all");
+const searchQuery = ref('');
+const datos = ref([]);
+const errorMensaje =('');
+
+const fetchHorario = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://localhost:3000/api/horarios", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al obtener los horarios");
+    }
+
+    const data = await response.json();
+    // datos.value = data;
+    datos.value = data.filter(hora => hora.estado !== "Eliminado");
+  } catch (error) {
+    console.error("Error al obtener los horarios:", error);
+    errorMensaje.value = "No se pudieron cargar los horarios.";
+  }
+}
+onMounted(fetchHorario);
 </script>
+
 
 <template>
   <admin_menu />
@@ -107,23 +155,20 @@ const confirmarAccion = async (id) => {
     <admin_header />
     <section class="pagina container-fluid main_espacio pl-50 pr-50">
       <div class="row secciones-tablas d-flex justify-content-center">
-        <div class="col-6 gap-5 d-flex justify-content-start align-items-center">
-          <form class="buscador text-start bg-white d-flex gap-4 align-items-center">
-            <input type="text" v-model="searchQuery" placeholder="Buscar" id="barra_buscar" class="w-75" />
-            <button id="buscar">
-              <img src="/public/imagenes/buscador.png" alt="buscador" />
-            </button>
-          </form>
-          <select class="filtros btn" required>
-            <option id="filtrar" value="1">Filtrar</option>
-          </select>
-        </div>
-        <div class="col-6 d-flex justify-content-end align-items-center">
-          <router-link to="/agregar_horario">
-          <button class="btn-verde" id="nuevo">
+        
+        <div class="col-11 gap-5 d-flex justify-content-center align-items-center">
+                <form class="buscador  text-start bg-white d-flex align-items-center w-75">
+                    <input type="text"  v-model="searchQuery"  placeholder="Buscar horario" id="barra_buscar" />
+                    <button id="buscar"> <!--id="buscar"-->
+                    <img src="/public/imagenes/buscador.png" alt="buscador" />
+                    </button>
+                </form>
+            </div>
+
+        <div class="col-1 d-flex justify-content-end align-items-center">
+          <button  @click="mostrarModal = true" class="btn-verde" id="nuevo">
             <img src="/public/imagenes/nuevo.png" id="img_nuevo" />
           </button>
-          </router-link>
         </div>
      
         <section class="col-6 pt-5">
@@ -138,28 +183,16 @@ const confirmarAccion = async (id) => {
                     <th>Edición</th>
                   </tr>
                 </thead>
-                <!-- <tbody>
-                  <tr v-for="dato in datos":key="dato.id">
-                    <td data-th="Cliente">{{ dato.id }}</td>
-                    <td data-th="Correo">{{dato.hora}}</td>
-                    <td data-th="Número">{{ dato.estado }}</td>                
-                    <td data-th="Edición"><router-link to="/modificar_horario"><button class="btn-verde" id="editar"><img :src="dato.edicion" id="img_editar"/></button> </router-link><button @click="confirmarAccion" class="delete-btn">
-                            <img src="/public/imagenes/eliminar.png" id="img_eliminar"/>
-                        </button></td>
-                  </tr>
-                </tbody> -->
                 <tbody>
                   <tr v-for="dato in datos" :key="dato.pk_id_horario">
                     <td data-th="Cliente">{{ dato.pk_id_horario }}</td>
                     <td data-th="Correo">{{ dato.hora }}</td>
                     <td data-th="Número">{{ dato.estado }}</td>                
                     <td data-th="Edición">
-                      <router-link :to="`/modificar_horario/${dato.pk_id_horario}`">
-                        <button class="btn-verde">
-                          <img src="/public/imagenes/editar.png" />
+                        <button @click="cargarHora(dato.pk_id_horario)"  class="btn-verde">
+                          <img src="/public/imagenes/editar.png" class="img_editar"/>
                         </button>
-                      </router-link>
-                      <button @click="confirmarAccion(dato.pk_id_horario)" class="delete-btn">
+                      <button @click="EliminarElemento(dato.pk_id_horario)" class="delete-btn">
                         <img src="/public/imagenes/eliminar.png" />
                       </button>
                     </td>
@@ -168,28 +201,60 @@ const confirmarAccion = async (id) => {
               </table>
             </div>
         </section>
-        <!-- <div class="col-12 text-center p-5 d-flex justify-content-center align-items-center">
-          <div class="d-flex flex-row gap-4 text-center">
-            <div class="circulos-flecha">
-              &lt;
-            </div>
-            <div class="circulos text-center p-3">
-              1
-            </div>
-            <div class="circulos text-center p-3">
-              2
-            </div>
-            <div class="circulos text-center p-3">
-              3
-            </div>
-            <div class="circulos text-center p-3">
-              4
-            </div>
-            <div class="circulos-flecha">
-              &gt;
-            </div>
-          </div>
-        </div> -->
+
+
+        <div v-if="mostrarModal" class="modal-backdrop">
+  <div class="modal-content container fluid">
+  
+    <div class="row d-flex justify-content-center">
+      <div class="col-12 justify-content-start d-flex p-0">
+      <button @click="mostrarModal = false" style="width: 20%;">
+        <img src="/public/imagenes/LetsIconsBack.svg" style=" width: 50px;" alt="regresar">
+      </button>
+      <div class="text-white justify-content-start d-flex">
+          <h3>Agregar Horario</h3>
+      </div>
+    </div>
+    <div class="col-12 mt-4 justify-content-center d-flex flex-column">
+      <label class="form-label">Fecha</label>
+      <input type="time" class="form-control" v-model="hora" />
+    </div>
+    
+    <div class="button-container mt-4">
+          <button @click="confirmarAccion" class="boton-form"><span>agregar</span></button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div v-if="mostrarModal2" class="modal-backdrop">
+  <div class="modal-content container fluid">
+  
+    <div class="row d-flex justify-content-center">
+      <div class="col-12 justify-content-start d-flex p-0">
+      <button @click="mostrarModal2 = false" style="width: 20%;">
+        <img src="/public/imagenes/LetsIconsBack.svg" style=" width: 50px;" alt="regresar">
+      </button>
+      <div class="text-white justify-content-start d-flex">
+          <h3>Modificar Horario</h3>
+      </div>
+    </div>
+    <div class="col-12 mt-4 justify-content-center d-flex flex-column">
+      <label class="form-label">Hora</label>
+      <input type="time" class="form-control" v-model="hora" />
+    </div>
+    <div class="col-12 mt-4 justify-content-center d-flex flex-column">
+      <label class="form-label">Estado</label>
+      <input type="text" class="form-control" v-model="estado" />
+    </div>
+    
+    <div class="button-container mt-4">
+          <button @click="confirmarEditar" class="boton-form"><span>MODIFICAR</span></button>
+        </div>
+    </div>
+  </div>
+</div>
+        
       </div>
     </section>
     
@@ -199,12 +264,66 @@ const confirmarAccion = async (id) => {
 </template>
 
 <style scoped>
+/********************,MODAL**************************** */
+h3{
+  color: white;
+}
+.form-control{
+  text-align: center;
+  padding-left: 4px;
+  padding-right:4px;
+}
+.form-label{
+    color: white !important;
+    font-size: 24px;
+    font-family: "Karla", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
 
+.modal-content {
+  background: #6A1B47;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 400px;
+  text-align: center;
+}
+
+
+/********otros estilos**************/
 .table-container {
   max-height: 800px;  /* Ajusta la altura según lo que necesites */
   overflow-y: auto;   /* Agrega la barra de desplazamiento vertical */
   border: 1px solid #ccc;
   margin-bottom: 20px;
+}
+
+/*********buscador*************************/
+.buscador {
+  border: 2px solid #000000;
+  border-radius: 8px;
+  width: 280px;
+  padding: 5px;
+
+}
+    
+#barra_buscar {
+  background-color: white;
+  font-size: 24px;
+  width: 95%;
 }
 
 .rwd-table {
@@ -293,7 +412,7 @@ select option {
 #img_nuevo {
   margin-left: 1px;
 }
-#img_editar{
+.img_editar{
   margin-left: 15px;
 }
 
@@ -324,145 +443,3 @@ select option {
   font-weight: 600;
 }
 </style>
-
-<!--
-/*********************TABLAS******************/
-table{
-  border-radius: 80px;
-}
-
-.rwd-table {
-  
-  margin: 2em 0;
-  min-width: 500px;
-  border-collapse: collapse;
-}
-.rwd-table th {
-  display: none;
-  background-color: #dcd4d4; /*cambiar el color*/
-  border-bottom: 3px solid #000000;
-}
-.rwd-table td {
-  display: block;
-}
-.rwd-table td:first-child {
-  padding-top: 0.5em;
-}
-.rwd-table td:last-child {
-  padding-bottom: 0.5em;
-}
-.rwd-table td:before {
-  content: attr(data-th) ": ";
-  font-weight: bold;
-  width: 6.5em;
-  display: inline-block;
-}
-@media (min-width: 480px) {
-  .rwd-table td:before {
-    display: none;
-  }
-}
-.rwd-table th,
-.rwd-table td {
-  text-align: left;
-}
-@media (min-width: 480px) {
-  .rwd-table th,
-  .rwd-table td {
-    display: table-cell;
-    padding: 0.25em 0.5em;
-  }
-  .rwd-table th:first-child,
-  .rwd-table td:first-child {
-    padding-left: 0;
-  }
-  .rwd-table th:last-child,
-  .rwd-table td:last-child {
-    padding-right: 0;
-  }
-}
-
-/*body {
-    padding: 0 2em;
-    font-family: Montserrat, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    color: #444;
-    background: #eee;
-  }
-  
-  h1 {
-    font-weight: normal;
-    letter-spacing: -1px;
-    color: #34495e;
-  }
-  */
-.rwd-table {
-  background: #efefef;
-  color: #100a0a;
-  border-radius: 0.4em;
-  /*border-bottom: 1px solid #000000;*/
-  /*overflow: hidden;*/
-}
-.rwd-table tr {
-  border-color: #05233f;
-  border-bottom: 2px solid #000000;
-}
-.rwd-table th,
-.rwd-table td {
-  margin: 0.5em 1em;
-}
-@media (min-width: 480px) {
-  .rwd-table th,
-  .rwd-table td {
-    padding: 1em !important;
-  }
-}
-.rwd-table th,
-.rwd-table td:before {
-  color: #480028;
-}
-
-
-<template>
-    <div>
-      <button @click="toggleMenu" class="btn">Abrir Menú Admin</button>
-      <div v-if="isMenuOpen" class="menu">
-        <p>Menú de Administración</p>
-        <ul>
-          <li>Opción 1</li>
-          <li>Opción 2</li>
-          <li>Opción 3</li>
-        </ul>
-      </div>
-    </div>
-</template>
-  
-  <script setup>
-  import { ref } from 'vue';
-  
-  const isMenuOpen = ref(false);
-  
-  const toggleMenu = () => {
-    isMenuOpen.value = !isMenuOpen.value;
-  };
-  </script>
-  
-  <style scoped>
-  .btn {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  .menu {
-    margin-top: 10px;
-    padding: 15px;
-    background: #f8f9fa;
-    border: 1px solid #ddd;
-    width: 200px;
-  }
-  </style>
-  
--->

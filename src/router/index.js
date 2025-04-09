@@ -55,7 +55,7 @@ const routes = [
       component: Horarios
     },
     {
-      path: '/editar_personal',
+      path: '/editar_personal/:id',
       name:'editar_personal',
       component:EditarPersonal
     },
@@ -80,7 +80,7 @@ const routes = [
       component:EliminarPersonal
     },
     {
-      path:'/modificar_reserva',
+      path:'/modificar_reserva/:id',
       name: 'ModificarReserva',
       component:ModificarReserva
     },

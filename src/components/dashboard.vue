@@ -34,24 +34,24 @@ import admin_header from './header_admin.vue'
         >
           <div class="d-flex flex-row align-items-start text-black p-3 mb-2">
             <div class="d-flex flex-column">
-              <h5 class="pr-50">Diario</h5>
-              <h4 id="diario1">$68,434</h4>
+              <h5 class="pr-50">Reservas del día </h5>
+              <h4 id="diario1">30</h4>
             </div>
             <span class="text-success ms-2">↑ 10%</span>
           </div>
 
           <div class="d-flex flex-row align-items-start text-black p-3 mb-2">
             <div class="d-flex flex-column">
-              <h5 class="pr-50">Mensual</h5>
-              <h4 id="mensual1">$2,053,020</h4>
+              <h5 class="pr-50"> Cancelaciones</h5>
+              <h4 id="mensual1">5</h4>
             </div>
             <span class="text-success ms-2">↑ 10%</span>
           </div>
 
           <div class="d-flex flex-row align-items-start text-black p-3 mb-2">
             <div class="d-flex flex-column">
-              <h5 class="pr-50">Anual</h5>
-              <h4 id="anual1">$24,636,240</h4>
+              <h5 class="pr-50">Tiempo promedio de atención</h5>
+              <h4 id="anual1">12min</h4>
             </div>
             <span class="text-success ms-2">↑ 10%</span>
           </div>
@@ -62,24 +62,24 @@ import admin_header from './header_admin.vue'
         >
           <div class="d-flex flex-row align-items-start text-black p-3 mb-2">
             <div class="d-flex flex-column">
-              <h5 class="pr-50">Diario</h5>
-              <h4 id="diario2">$68,434</h4>
+              <h5 class="pr-50">Ingreso promedio por cliente</h5>
+              <h4 id="diario2">$230.00</h4>
             </div>
             <span class="text-success ms-2">↑ 10%</span>
           </div>
 
           <div class="d-flex flex-row align-items-start text-black p-3 mb-2">
             <div class="d-flex flex-column">
-              <h5 class="pr-50">Mensual</h5>
-              <h4 id="mensual">$2,053,020</h4>
+              <h5 class="pr-50">Promedio por orden</h5>
+              <h4 id="mensual">$360.50</h4>
             </div>
             <span class="text-success ms-2">↑ 10%</span>
           </div>
 
           <div class="d-flex flex-row align-items-start text-black p-3 mb-2">
             <div class="d-flex flex-column">
-              <h5 class="pr-50">Anual</h5>
-              <h4 id0="anual">$24,636,240</h4>
+              <h5 class="pr-50">No shows</h5>
+              <h4 id0="anual">4</h4>
             </div>
             <span class="text-success ms-2">↑ 10%</span>
           </div>
@@ -89,24 +89,24 @@ import admin_header from './header_admin.vue'
         >
           <div class="d-flex flex-row align-items-start text-black p-3 mb-2">
             <div class="d-flex flex-column">
-              <h5 class="pr-50">Diario</h5>
-              <h4 id="diario">$68,434</h4>
+              <h5 class="pr-50">Promedio de consumo por mesa</h5>
+              <h4 id="diario">$1000</h4>
             </div>
             <span class="text-success ms-2">↑ 10%</span>
           </div>
 
           <div class="d-flex flex-row align-items-start text-black p-3 mb-2">
             <div class="d-flex flex-column">
-              <h5 class="pr-50">Mensual</h5>
-              <h4 id="mensual">$2,053,020</h4>
+              <h5 class="pr-50">Tiempo promedio de preparación</h5>
+              <h4 id="mensual">30 Minutos</h4>
             </div>
             <span class="text-success ms-2">↑ 10%</span>
           </div>
 
           <div class="d-flex flex-row align-items-start text-black p-3 mb-2">
             <div class="d-flex flex-column">
-              <h5 class="pr-50">Anual</h5>
-              <h4 id="anual">$24,636,240</h4>
+              <h5 class="pr-50">Calificación promedio</h5>
+              <h4 id="anual">4.7/5</h4>
             </div>
             <span class="text-success ms-2">↑ 10%</span>
           </div>
