@@ -38,45 +38,89 @@ onMounted(() => {
 });
 
 /************alerta**************/
-const CerrarSesion =()=>{
+// const CerrarSesion =()=>{
+//   Swal.fire({
+//   html: `
+//   <h3 style="padding-bottom: 20px;">¿Quiere cerrar sesión?</h3>
+//   <div style="display: flex; justify-items: center; flex-direction: column;align-items: center;">
+//       <animated-icons
+//   src="https://animatedicons.co/get-icon?name=exit&style=minimalistic&token=6e09845f-509a-4b0a-a8b0-c47e168ad977"
+//   trigger="click"
+//   attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
+//   height="150"
+//   width="150"
+// ></animated-icons>
+// <p style= "color: #6B6767">Si deseas salir, haz clic en cerrar sesión. De lo contrario, selecciona cancelar para continuar trabajando.</p>
+//     `,
+//   showCancelButton: true,
+//   didOpen: () => {
+//       // Cargar el script dinámicamente solo cuando se abre la alerta
+//       const script = document.createElement('script')
+//       script.src = 'https://animatedicons.co/scripts/embed-animated-icons.js'
+//       document.body.appendChild(script)
+//     },
+//   confirmButtonText: "cerrar sesion",
+//   cancelButtonText: "cancelar",
+//   customClass: {
+//     confirmButton: 'btn-confirm-green',
+//     cancelButton: 'btn-cancel'
+//   },
+//   buttonsStyling: false
+// }).then((result) => {
+//   if (result.isConfirmed) {
+//     Swal.fire({
+//       title: "Se ha cerrado sesión",
+//       icon: "success"
+//     });
+//   }
+// });
+// }
+
+const CerrarSesion = () => {
   Swal.fire({
-  html: `
-  <h3 style="padding-bottom: 20px;">¿Quiere cerrar sesión?</h3>
-  <div style="display: flex; justify-items: center; flex-direction: column;align-items: center;">
-      <animated-icons
-  src="https://animatedicons.co/get-icon?name=exit&style=minimalistic&token=6e09845f-509a-4b0a-a8b0-c47e168ad977"
-  trigger="click"
-  attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
-  height="150"
-  width="150"
-></animated-icons>
-<p style= "color: #6B6767">Si deseas salir, haz clic en cerrar sesión. De lo contrario, selecciona cancelar para continuar trabajando.</p>
+    html: `
+      <h3 style="padding-bottom: 20px;">¿Quiere cerrar sesión?</h3>
+      <div style="display: flex; justify-items: center; flex-direction: column;align-items: center;">
+          <animated-icons
+            src="https://animatedicons.co/get-icon?name=exit&style=minimalistic&token=6e09845f-509a-4b0a-a8b0-c47e168ad977"
+            trigger="click"
+            attributes='{"variationThumbColour":"#536DFE","variationName":"Two Tone","variationNumber":2,"numberOfGroups":2,"backgroundIsGroup":false,"strokeWidth":1,"defaultColours":{"group-1":"#000000","group-2":"#536DFE","background":"#FFFFFF"}}'
+            height="150"
+            width="150"
+          ></animated-icons>
+      <p style= "color: #6B6767">Si deseas salir, haz clic en cerrar sesión. De lo contrario, selecciona cancelar para continuar trabajando.</p>
+      </div>
     `,
-  showCancelButton: true,
-  didOpen: () => {
-      // Cargar el script dinámicamente solo cuando se abre la alerta
-      const script = document.createElement('script')
-      script.src = 'https://animatedicons.co/scripts/embed-animated-icons.js'
-      document.body.appendChild(script)
+    showCancelButton: true,
+    didOpen: () => {
+        // Cargar el script dinámicamente solo cuando se abre la alerta
+        const script = document.createElement('script')
+        script.src = 'https://animatedicons.co/scripts/embed-animated-icons.js'
+        document.body.appendChild(script)
     },
-  confirmButtonText: "cerrar sesion",
-  cancelButtonText: "cancelar",
-  customClass: {
-    confirmButton: 'btn-confirm-green',
-    cancelButton: 'btn-cancel'
-  },
-  buttonsStyling: false
-}).then((result) => {
-  if (result.isConfirmed) {
-    Swal.fire({
-      title: "Se ha cerrado sesión",
-      icon: "success"
-    });
-  }
-});
-}
+    confirmButtonText: "cerrar sesion",
+    cancelButtonText: "cancelar",
+    customClass: {
+      confirmButton: 'btn-confirm-green',
+      cancelButton: 'btn-cancel'
+    },
+    buttonsStyling: false
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Eliminar el token del localStorage
+      localStorage.removeItem("token");
 
+      // Notificación de éxito
+      Swal.fire({
+        title: "Se ha cerrado sesión",
+        icon: "success"
+      });
 
+      // Redirigir al usuario a la página de login
+      router.push("/");
+    }
+  });
+};
 
 
 
