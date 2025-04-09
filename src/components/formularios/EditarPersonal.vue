@@ -201,6 +201,7 @@ label {
 /*******para la flecha**********/
 .pl-40{
  width: 90%;
+ margen:none;
 }
 .main_espacio1 {
   display: flex;

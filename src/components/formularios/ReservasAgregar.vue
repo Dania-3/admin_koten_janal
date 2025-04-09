@@ -194,7 +194,8 @@ h4 {
   width: 370px;
 }
 .comensales{
-  width: 373px;
+  width: 344px;
+  height: 29px;
 }
 .comentario {
   height: 200px;

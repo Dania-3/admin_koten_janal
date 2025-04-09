@@ -32,7 +32,7 @@ const desplazar_menu = () => {
 };
 
 
-// Llamada a la función `modo` al montar el componente
+// Llamada a la función modo al montar el componente
 onMounted(() => {
   modo(); // Inicializa el comportamiento de modo nocturno
 });
