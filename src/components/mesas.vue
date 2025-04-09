@@ -1,80 +1,162 @@
 <script setup>
 // estructura para funciones
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import admin_menu from './menu_admin.vue';
 import footer_admin from './footer.vue';
 import admin_header from './header_admin.vue';
 
-import Swal from 'sweetalert2'
-import 'sweetalert2/dist/sweetalert2.min.css'
-
-const showEditar = () => {
-  Swal.fire({
-    title: '¡Buen trabajo!',
-    text: 'Se ha modificado exitosamente',
-    icon: 'success',
-    confirmButtonText: 'continuar'
-  })
-}
-const showAgregar =() =>{
-  Swal.fire({
-    title: '¡Buen trabajo!',
-    text: 'Se ha agregado exitosamente',
-    icon: 'success',
-    confirmButtonText: 'continuar'
-  });
-}
 /*import BtnModal from './formularios/ModificarMesa.vue'; /*para el modal */
 
 const mostrarModal = ref(false)
 const mostrarModal2 = ref(false)
 
+const numero = ref('');
+const mesa = ref('');
+const capacidad = ref('');
+const estado = ref('');
+const mesaSeleccionada = ref(null);
 
+const cargarMesa = (mesaId) => {
+  const mesaEditar = datos.value.find(mesa => mesa.pk_id_mesa === mesaId);
+  
+  if (mesaEditar) {
+    // Guarda los datos de la mesa en las variables del formulario
+    mesaSeleccionada.value = mesaEditar; // Puedes usar esto para cualquier lógica adicional si lo necesitas
+    numero.value = mesaEditar.numero_mesa;
+    mesa.value = mesaEditar.seccion_mesa;
+    capacidad.value = mesaEditar.capacidad;
+    estado.value = mesaEditar.estado;
 
-const confirmarAccion= () => {
-    alert("Se ha agregado exitosamente.");
-    mostrarModal2.value= false;
+    // Muestra el modal
+    mostrarModal.value = true;
+  }
 };
 
-const EliminarElemento = () => {
-  const respuesta = window.confirm("¿Deseas eliminar?");
+
+const confirmarEditar = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`http://localhost:3000/api/mesas/${mesaSeleccionada.value.pk_id_mesa}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        numero_mesa: numero.value,
+        seccion_mesa: mesa.value,
+        capacidad: capacidad.value,
+        estado: estado.value
+      })
+    });
+
+    // Verificamos si la respuesta es exitosa
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Error al modificar la mesa');
+    }
+
+    const data = await response.json();
+    alert(data.message);  // Mensaje de éxito
+    mostrarModal.value = false;  // Cierra el modal
+    fetchMesas();  // Recarga la lista de mesas
+  } catch (error) {
+    console.error("Error al modificar la mesa:", error);
+    alert(error.message || "No se pudo modificar la mesa");
+  }
+};
+
+
+
+const confirmarAccion= async () => {
+  try {
+      const token = localStorage.getItem("token"); // Obtén el token del localStorage
+      const response = await fetch("http://localhost:3000/api/mesas", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          numero_mesa: numero.value,
+          seccion_mesa: mesa.value,
+          capacidad: capacidad.value,
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al agregar la mesa");
+      }
+
+      const data = await response.json();
+      alert("Mesa agregada correctamente");
+      //router.push("/me");
+      mostrarModal2.value= false;
+      fetchMesas();
+    } catch (error) {
+      console.error("Error al agregar la mesa:", error);
+      alert("No se pudo agregar la mesa");
+    }
+    
+};
+
+const EliminarElemento = async (id) => {
+  const respuesta = window.confirm("¿Deseas eliminar esta mesa?");
   
   if (respuesta) {
-    alert("Se ha borrado exitosamente.");
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`http://localhost:3000/api/mesas/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al eliminar la mesa");
+      }
+
+      alert("Mesa eliminado correctamente.");
+      fetchMesas(); // Recargar la lista de horarios
+    } catch (error) {
+      console.error("Error al eliminar Mesa:", error);
+      alert("No se pudo eliminar la mesa.");
+    }
   }
 };
 
 const texto = ref('Hola desde el modaaal');
 const filter =ref("all");
 const searchQuery = ref('');
-var datos = ref([
-{id:1, numero: '10:00', seccion: 'libre', capacidad: '5', estado:'libre', edicion: '/public/imagenes/editar.png'},
-{id:2, numero: '10:00', seccion: 'libre', capacidad: '5', estado:'libre', edicion: '/public/imagenes/editar.png'},
-{id:3, numero: '10:00', seccion: 'libre', capacidad: '5', estado:'libre', edicion: '/public/imagenes/editar.png'},
-{id:4, numero: '10:00', seccion: 'libre', capacidad: '5', estado:'libre', edicion: '/public/imagenes/editar.png'},
-]);
+const datos = ref([]);
+const errorMensaje =('');
 
-/*const props = defineProps({
-    mensaje: String,
-    mostrar: Boolean
-  })
-  
-  const emit = defineEmits(['cerrar'])
-  
-  const modal = ref(null)
-  
-  const cerrar = () => {
-    modal.value.close()
-    emit('cerrar')
-  }
-  
-  watch(() => props.mostrar, (nuevoValor) => {
-    if (nuevoValor) {
-      modal.value.showModal()
-    } else {
-      modal.value.close()
+const fetchMesas = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://localhost:3000/api/mesas", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al obtener las mesas");
     }
-  })*/
+
+    const data = await response.json();
+    // datos.value = data;
+    datos.value = data.filter(mesa => mesa.estado !== "Eliminado");
+  } catch (error) {
+    console.error("Error al obtener las mesas:", error);
+    errorMensaje.value = "No se pudieron cargar las mesas.";
+  }
+}
+onMounted(fetchMesas);
 
 </script>
 
@@ -98,28 +180,28 @@ var datos = ref([
           </button>
         </div>
 
-        <section class="col-6 pt-5 overflow-auto" style="height: 700px; overflow-x: hidden;">
+        <section class="col-6 pt-5 overflow-auto" style="height: 700px; overflow-x: scroll;">
           <table class="rwd-table" id="tabla">
             <thead>
               <tr>
                 <th>Id    </th>
-                <th>Número</th>
                 <th>Sección</th>
+                <th>Número</th>
                 <th>Capacidad</th>
                 <th>Estado</th>
                 <th>Edición</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="dato in datos":key="dato.id">
-                <td data-th="Cliente">{{ dato.id }}</td>
-                <td data-th="Correo">{{dato.numero}}</td>
-                <td data-th="Correo">{{dato.seccion}}</td>
+              <tr v-for="dato in datos":key="dato.pk_id_mesa">
+                <td data-th="Cliente">{{ dato.pk_id_mesa }}</td>
+                <td data-th="Correo">{{dato.seccion_mesa}}</td>
+                <td data-th="Correo">{{dato.numero_mesa}}</td>
                 <td data-th="Correo">{{dato.capacidad}}</td>
                 <td data-th="Número">{{ dato.estado }}</td>                
                 <td data-th="Edición">
-                <button class="btn-verde editar" @click="mostrarModal = true" ><img :src="dato.edicion" class="img_editar"/></button> 
-                <button class="delete-btn" @click="EliminarElemento"> <!--@click="confirmarAccion(dato.pk_id_horario)" --> <!--<router-link :to="`/modificar_mesa/${dato.id}`"></router-link>-->
+                <button class="btn-verde editar" @click="cargarMesa(dato.pk_id_mesa)" ><img src="/public/imagenes/editar.png" class="img_editar"/></button> 
+                <button class="delete-btn" @click="EliminarElemento(dato.pk_id_mesa)"> <!--@click="confirmarAccion(dato.pk_id_horario)" --> <!--<router-link :to="`/modificar_mesa/${dato.id}`"></router-link>-->
                     <img src="/public/imagenes/eliminar.png" />
                 </button>
                   </td>
@@ -128,30 +210,9 @@ var datos = ref([
           </table>
         </section>
         
-        <!--div class="col-12 text-center p-5 d-flex justify-content-center align-items-center">
-          <div class="d-flex flex-row gap-4 text-center">
-            <div class="circulos-flecha">
-              &lt;
-            </div>
-            <div class="circulos text-center p-3">
-              1
-            </div>
-            <div class="circulos text-center p-3">
-              2
-            </div>
-            <div class="circulos text-center p-3">
-              3
-            </div>
-            <div class="circulos text-center p-3">
-              4
-            </div>
-            <div class="circulos-flecha">
-              &gt;
-            </div>
-          </div>
-        </div-->
     <!-- Modal controlado solo por Vue -->
 
+    <!-- Modal para editar mesa -->
 <div v-if="mostrarModal" class="form_nuevo modal-backdrop">
   <div class="modal-content container fluid">
   
@@ -170,23 +231,24 @@ var datos = ref([
     </div>
     <div class="col-12 mt-4">
           <label class="form-label">Sección</label>
-          <select class="form-select input-lg" v-model="mesa"required>
-            <option>1-A</option>
-            <option>1-B</option>
-            <option>2-A</option>
-          </select>
+          <input type="text" class="form-control" v-model="mesa" required>
         </div>
     <div class="col-12 mt-4">
       <label class="form-label">Capacidad</label>
-      <input type="number" class="form-control" v-model="numero" required>
+      <input type="number" class="form-control" v-model="capacidad" required>
+    </div>
+    <div class="col-12 mt-4">
+      <label class="form-label">Estado</label>
+      <input type="text" class="form-control" v-model="estado" required>
     </div>
     <div class="button-container mt-4">
-          <button @click="showEditar" class="boton-form"><span>modificar</span></button>
+          <button @click="confirmarEditar" class="boton-form"><span>MODIFICAR</span></button>
         </div>
     </div>
   </div>
 </div>
 
+<!-- Modal para agregar mesa -->
 <div v-if="mostrarModal2" class="modal-backdrop">
   <div class="modal-content container fluid">
   
@@ -205,18 +267,14 @@ var datos = ref([
   </div>
   <div class="col-12 mt-4">
         <label class="form-label">Sección</label>
-        <select class="form-select input-lg" v-model="mesa"required>
-          <option>1-A</option>
-          <option>1-B</option>
-          <option>2-A</option>
-        </select>
+        <input type="text" class="form-control" v-model="mesa" required>
       </div>
   <div class="col-12 mt-4">
     <label class="form-label">Capacidad</label>
-    <input type="number" class="form-control" v-model="numero" required>
+    <input type="number" class="form-control" v-model="capacidad" required>
   </div>
   <div class="button-container mt-4">
-        <button @click="showAgregar" class="boton-form"><span>agregar</span></button>
+        <button @click="confirmarAccion" class="boton-form"><span>AGREGAR</span></button>
       </div>
   </div>
 </div>

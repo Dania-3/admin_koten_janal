@@ -6,7 +6,7 @@
     </button>
   </router-link>
     <div class="d-flex justify-content-center align-items-center">
-    <form @submit.prevent="showAgregar" class="form1 text-white">
+    <form @submit.prevent="agregarReserva" class="form1 text-white">
       <h2 class="text-center text-white">Agregar reservación</h2>
       <div class="row m-5 d-flex justify-content-center">
         <div class="col-md-3">
@@ -33,23 +33,23 @@
         </div>
         <div class="col-md-3">
           <label class="form-label">Hora:</label>
-          <input type="time" class="form-control input-lg" v-model="form.hora" />
+          <select class="form-select input-lg hora" v-model="form.hora">
+              <option v-for="hora in horas" :key="hora.hora" :value="hora.hora">
+                {{ hora.hora }}
+              </option>
+            </select>
         </div>
         <div class="col-md-3">
           <label class="form-label">Mesa:</label>
-          <select class="form-select input-lg" v-model="form.mesa">
-            <option>1-A</option>
-            <option>1-B</option>
-            <option>2-A</option>
+          <select class="form-select input-lg mesa" v-model="form.mesa">
+            <option v-for="mesa in mesas" :key="mesa.numero_mesa" :value="mesa.numero_mesa + ' - ' + mesa.seccion_mesa">
+                {{ mesa.seccion_mesa }} - {{ mesa.numero_mesa }}
+              </option>
           </select>
         </div>
         <div class="col-md-3">
           <label class="form-label">Comensales:</label>
-          <select class="form-select input-lg" v-model="form.comensales">
-            <option>1 comensal</option>
-            <option>2 comensales</option>
-            <option>3 comensales</option>
-          </select>
+          <input type="number" class="form-control comensales" v-model="form.comensales"/>
         </div>
       </div>
       <div class="row m-5 d-flex justify-content-center">
@@ -67,20 +67,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
-import Swal from 'sweetalert2'
-import 'sweetalert2/dist/sweetalert2.min.css'
-
-const showAgregar =() =>{
-  Swal.fire({
-    title: '¡Buen trabajo!',
-    text: 'Se ha agregado exitosamente',
-    icon: 'success',
-    confirmButtonText: 'continuar'
-  });
-}
-
+const router = useRouter();
 const form = ref({
   nombre: "",
   apellido: "",
@@ -88,38 +78,124 @@ const form = ref({
   correo: "",
   fecha: "",
   hora: "",
-  mesa: "1-A",
-  comensales: "1 comensal",
-  comentario: "",
+  mesa: "",
+  comensales: "",
+  comentario: ""
 });
 
+const mesas = ref([]);
+const horas = ref([]);
 
-const submitForm = () => {
-  console.log("Formulario enviado", form.value);
-  alert("Reservación agregada con éxito");
+// Función para cargar las mesas desde el backend
+const obtenerMesas = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://localhost:3000/api/mesasDisp", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+    if (!response.ok) {
+      throw new Error("No se pudieron obtener las mesas");
+    }
+    const data = await response.json();
+    mesas.value = data;
+  } catch (error) {
+    console.error("Error al obtener las mesas:", error);
+    alert("No se pudieron obtener las mesas");
+  }
+};
+onMounted(obtenerMesas);
+
+const obtenerHoras = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://localhost:3000/api/horariosDisp", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+    if (!response.ok) {
+      throw new Error("No se pudieron obtener las horas");
+    }
+    const data = await response.json();
+    horas.value = data;
+  } catch (error) {
+    console.error("Error al obtener las horas:", error);
+    alert("No se pudieron obtener las horas");
+  }
+};
+onMounted(obtenerHoras);
+
+const agregarReserva = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://localhost:3000/api/reservaciones", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        nombre: form.value.nombre,
+        apellido: form.value.apellido,
+        telefono: form.value.telefono,
+        correo: form.value.correo,
+        hora: form.value.hora,
+        fecha: form.value.fecha,
+        mesa: form.value.mesa,
+        comensales: form.value.comensales,
+        comentario: form.value.comentario,
+      })
+    });
+    if(!response.ok) {
+      throw new Error("Error al agregar la reservacion.");
+    }
+    
+    const data = await response.json();
+    alert("Reservacion agregado correctamente.");
+    router.push("/reservas");
+  }catch (error) {
+    console.error("Error al agregar reservacion:", error);
+    alert("No se pudo agregar la reservacion");
+  }
 };
 </script>
 
 <style scoped>
 .form1 {
   width: 80%;
+
 }
 h4 {
   color: white;
 }
-body {
+/* body {
   background-color: #6a1b47;
   color: white;
-}
+} */
 .container-fluid {
-  min-height: 1085px;
+  min-height: 950px;
   background: #6a1b47;
-  padding: 5px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  margin-top: 80px;
+  width: 90%;
+
 }
 .input-lg {
   font-size: 1.25rem;
-  padding: 10px;}
+  padding: 5px;
+}
+.mesa{
+  width: 370px;
+}
+.comensales{
+  width: 373px;
+}
 .comentario {
   height: 200px;
 }

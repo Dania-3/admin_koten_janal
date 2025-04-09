@@ -1,92 +1,95 @@
-<!-- <script setup>
-// estructura para funciones
-import { ref } from "vue";
+<script setup>
+import { ref, onMounted } from "vue";
 import admin_menu from './menu_admin.vue';
 import footer_admin from './footer.vue';
 import admin_header from './header_admin.vue';
 
+const mostrarModal = ref(false)
+const mostrarModal2 = ref(false)
 
-const filter =ref("all");
-const searchQuery = ref('');
-var datos = ref([
-{id:1, hora: '10:00', estado: 'libre', edicion: '/public/imagenes/editar.png'},
-{id:1, hora: '10:00', estado: 'libre', edicion: '/public/imagenes/editar.png'},
-{id:1, hora: '10:00', estado: 'libre', edicion: '/public/imagenes/editar.png'},
-{id:1, hora: '10:00', estado: 'libre', edicion: '/public/imagenes/editar.png'},
-]);
-const confirmarAccion = () => {
-  const respuesta = window.confirm("¿Deseas eliminar?");
+const hora = ref('');
+const estado = ref('');
+const horaSeleccionada = ref(null);
+
+const cargarHora = (horaId) => {
+  const horaEditar = datos.value.find(hora => hora.pk_id_horario === horaId);
   
-  if (respuesta) {
-    alert("Se ha borrado exitosamente.");
+  if (horaEditar) {
+    // Guarda los datos de la mesa en las variables del formulario
+    horaSeleccionada.value = horaEditar; // Puedes usar esto para cualquier lógica adicional si lo necesitas
+    hora.value = horaEditar.hora;
+    estado.value = horaEditar.estado;
+
+    // Muestra el modal
+    mostrarModal2.value = true;
   }
 };
-/*const datostabla = computed(()=>{
-  return datos.value.filter(dato=>{
-            if(filter.value=== "all"){
-                return true;
-            }
-            if(FileReader.value=== "mesa") return dato.mesa.toLowerCase() === buscar.value;
-            return true;
-            if(FileReader.value=== "hora") return dato.hora.toLowerCase() === buscar.value;
-            return true;
-        })
-});
-*/
 
-</script> -->
 
-<script setup>
-import { ref, onMounted, computed } from "vue";
-import admin_menu from './menu_admin.vue';
-import footer_admin from './footer.vue';
-import admin_header from './header_admin.vue';
-
-const filter = ref("all");
-const searchQuery = ref('');
-const datos = ref([]);
-const errorMensaje = ref('');
-
-const fetchHorarios = async () => {
+const confirmarEditar = async () => {
   try {
     const token = localStorage.getItem("token");
-    const response = await fetch("http://localhost:3000/api/horarios", {
-      method: "GET",
+    const response = await fetch(`http://localhost:3000/api/horarios/${horaSeleccionada.value.pk_id_horario}`, {
+      method: "PUT",
       headers: {
         "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
+      body: JSON.stringify({
+        hora: hora.value,
+        estado: estado.value
+      })
     });
 
+    // Verificamos si la respuesta es exitosa
     if (!response.ok) {
-      throw new Error("Error al obtener los horarios");
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Error al modificar el horario');
     }
 
     const data = await response.json();
-    // datos.value = data;
-    datos.value = data.filter(horario => horario.estado !== "Eliminado");
+    alert(data.message);  // Mensaje de éxito
+    mostrarModal2.value = false;  // Cierra el modal
+    fetchHorario();  // Recarga la lista de mesas
   } catch (error) {
-    console.error("Error al obtener horarios:", error);
-    errorMensaje.value = "No se pudieron cargar los horarios.";
+    console.error("Error al modificar el horario:", error);
+    alert(error.message || "No se pudo modificar el horario");
   }
 };
 
-onMounted(fetchHorarios);
 
-const mostrarModal = ref(false)
-const confirmarAgregar = () =>{
-  alert("agregado exitosamente");
-  mostrarModal.value=false;
-}
 
-const mostrarModal2 = ref(false)
+const confirmarAccion= async () => {
+  try {
+      const token = localStorage.getItem("token"); // Obtén el token del localStorage
+      const response = await fetch("http://localhost:3000/api/horarios", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          hora: hora.value,
+        })
+      });
 
-const confirmarEditar = () =>{
-  alert("Modificado exitosamente");
-  mostrarModal2.value=false;
-}
+      if (!response.ok) {
+        throw new Error("Error al agregar la mesa");
+      }
 
-const confirmarAccion = async (id) => {
+      const data = await response.json();
+      alert("Horario agregado correctamente");
+      //router.push("/me");
+      mostrarModal.value= false;
+      fetchHorario();
+    } catch (error) {
+      console.error("Error al agregar el horario:", error);
+      alert("No se pudo agregar el horario");
+    }
+    
+};
+
+const EliminarElemento = async (id) => {
   const respuesta = window.confirm("¿Deseas eliminar este horario?");
   
   if (respuesta) {
@@ -105,7 +108,7 @@ const confirmarAccion = async (id) => {
       }
 
       alert("Horario eliminado correctamente.");
-      fetchHorarios(); // Recargar la lista de horarios
+      fetchHorario(); // Recargar la lista de horarios
     } catch (error) {
       console.error("Error al eliminar horario:", error);
       alert("No se pudo eliminar el horario.");
@@ -113,16 +116,36 @@ const confirmarAccion = async (id) => {
   }
 };
 
-const datosFiltrados = computed(() => {
-  const query = searchQuery.value.toLowerCase();
-  return datos.value.filter((item) =>
-    Object.values(item).some(val =>
-      String(val).toLowerCase().includes(query)
-    )
-  );
-});
+const texto = ref('Hola desde el modaaal');
+const filter =ref("all");
+const searchQuery = ref('');
+const datos = ref([]);
+const errorMensaje =('');
 
+const fetchHorario = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://localhost:3000/api/horarios", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
 
+    if (!response.ok) {
+      throw new Error("Error al obtener los horarios");
+    }
+
+    const data = await response.json();
+    // datos.value = data;
+    datos.value = data.filter(hora => hora.estado !== "Eliminado");
+  } catch (error) {
+    console.error("Error al obtener los horarios:", error);
+    errorMensaje.value = "No se pudieron cargar los horarios.";
+  }
+}
+onMounted(fetchHorario);
 </script>
 
 
@@ -160,26 +183,16 @@ const datosFiltrados = computed(() => {
                     <th>Edición</th>
                   </tr>
                 </thead>
-                <!-- <tbody>
-                  <tr v-for="dato in datos":key="dato.id">
-                    <td data-th="Cliente">{{ dato.id }}</td>
-                    <td data-th="Correo">{{dato.hora}}</td>
-                    <td data-th="Número">{{ dato.estado }}</td>                
-                    <td data-th="Edición"><router-link to="/modificar_horario"><button class="btn-verde" id="editar"><img :src="dato.edicion" id="img_editar"/></button> </router-link><button @click="confirmarAccion" class="delete-btn">
-                            <img src="/public/imagenes/eliminar.png" id="img_eliminar"/>
-                        </button></td>
-                  </tr>
-                </tbody> -->
                 <tbody>
                   <tr v-for="dato in datosFiltrados" :key="dato.pk_id_horario">
                     <td data-th="Cliente">{{ dato.pk_id_horario }}</td>
                     <td data-th="Correo">{{ dato.hora }}</td>
                     <td data-th="Número">{{ dato.estado }}</td>                
                     <td data-th="Edición">
-                        <button @click="mostrarModal2 = true"  class="btn-verde"> <!--<router-link :to="`/modificar_horario/${dato.pk_id_horario}`"> </router-link> -->
+                        <button @click="cargarHora(dato.pk_id_horario)"  class="btn-verde">
                           <img src="/public/imagenes/editar.png" class="img_editar"/>
                         </button>
-                      <button @click="confirmarAccion(dato.pk_id_horario)" class="delete-btn">
+                      <button @click="EliminarElemento(dato.pk_id_horario)" class="delete-btn">
                         <img src="/public/imagenes/eliminar.png" />
                       </button>
                     </td>
@@ -208,7 +221,7 @@ const datosFiltrados = computed(() => {
     </div>
     
     <div class="button-container mt-4">
-          <button @click="confirmarAgregar" class="boton-form"><span>agregar</span></button>
+          <button @click="confirmarAccion" class="boton-form"><span>agregar</span></button>
         </div>
     </div>
   </div>
@@ -227,8 +240,12 @@ const datosFiltrados = computed(() => {
       </div>
     </div>
     <div class="col-12 mt-4 justify-content-center d-flex flex-column">
-      <label class="form-label">Fecha</label>
+      <label class="form-label">Hora</label>
       <input type="time" class="form-control" v-model="hora" />
+    </div>
+    <div class="col-12 mt-4 justify-content-center d-flex flex-column">
+      <label class="form-label">Estado</label>
+      <input type="text" class="form-control" v-model="estado" />
     </div>
     
     <div class="button-container mt-4">
@@ -426,145 +443,3 @@ select option {
   font-weight: 600;
 }
 </style>
-
-<!--
-/*********************TABLAS******************/
-table{
-  border-radius: 80px;
-}
-
-.rwd-table {
-  
-  margin: 2em 0;
-  min-width: 500px;
-  border-collapse: collapse;
-}
-.rwd-table th {
-  display: none;
-  background-color: #dcd4d4; /*cambiar el color*/
-  border-bottom: 3px solid #000000;
-}
-.rwd-table td {
-  display: block;
-}
-.rwd-table td:first-child {
-  padding-top: 0.5em;
-}
-.rwd-table td:last-child {
-  padding-bottom: 0.5em;
-}
-.rwd-table td:before {
-  content: attr(data-th) ": ";
-  font-weight: bold;
-  width: 6.5em;
-  display: inline-block;
-}
-@media (min-width: 480px) {
-  .rwd-table td:before {
-    display: none;
-  }
-}
-.rwd-table th,
-.rwd-table td {
-  text-align: left;
-}
-@media (min-width: 480px) {
-  .rwd-table th,
-  .rwd-table td {
-    display: table-cell;
-    padding: 0.25em 0.5em;
-  }
-  .rwd-table th:first-child,
-  .rwd-table td:first-child {
-    padding-left: 0;
-  }
-  .rwd-table th:last-child,
-  .rwd-table td:last-child {
-    padding-right: 0;
-  }
-}
-
-/*body {
-    padding: 0 2em;
-    font-family: Montserrat, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    color: #444;
-    background: #eee;
-  }
-  
-  h1 {
-    font-weight: normal;
-    letter-spacing: -1px;
-    color: #34495e;
-  }
-  */
-.rwd-table {
-  background: #efefef;
-  color: #100a0a;
-  border-radius: 0.4em;
-  /*border-bottom: 1px solid #000000;*/
-  /*overflow: hidden;*/
-}
-.rwd-table tr {
-  border-color: #05233f;
-  border-bottom: 2px solid #000000;
-}
-.rwd-table th,
-.rwd-table td {
-  margin: 0.5em 1em;
-}
-@media (min-width: 480px) {
-  .rwd-table th,
-  .rwd-table td {
-    padding: 1em !important;
-  }
-}
-.rwd-table th,
-.rwd-table td:before {
-  color: #480028;
-}
-
-
-<template>
-    <div>
-      <button @click="toggleMenu" class="btn">Abrir Menú Admin</button>
-      <div v-if="isMenuOpen" class="menu">
-        <p>Menú de Administración</p>
-        <ul>
-          <li>Opción 1</li>
-          <li>Opción 2</li>
-          <li>Opción 3</li>
-        </ul>
-      </div>
-    </div>
-</template>
-  
-  <script setup>
-  import { ref } from 'vue';
-  
-  const isMenuOpen = ref(false);
-  
-  const toggleMenu = () => {
-    isMenuOpen.value = !isMenuOpen.value;
-  };
-  </script>
-  
-  <style scoped>
-  .btn {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  .menu {
-    margin-top: 10px;
-    padding: 15px;
-    background: #f8f9fa;
-    border: 1px solid #ddd;
-    width: 200px;
-  }
-  </style>
-  
--->

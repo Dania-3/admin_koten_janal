@@ -1,43 +1,63 @@
 <script setup>
 // estructura para funciones
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import admin_menu from './menu_admin.vue';
 import footer_admin from './footer.vue';
 import admin_header from './header_admin.vue';
 import { computed } from "vue";
+import {useRouter} from 'vue-router';
 
 const filtro =ref("all");
 const searchQuery = ref('');
-var datos = ref([
-{id:1, nombre: 'like',correo: 'like@jedi.com', numero: 123456, fecha: '2025-03-29', hora: '14:00', mesa: 'mesa 5', comensales: 4, estatus: 'cancelado', edicion: '/public/imagenes/editar.png', edicion1:'/public/imagenes/eliminar.png'},
-{id:2, nombre: 'chavos',correo: 'chavos@jedi.com', numero: 123456, fecha: '2025-03-29', hora: '14:00', mesa: 'mesa 5', comensales: 4, estatus: 'cancelado', edicion: '/public/imagenes/editar.png', edicion1:'/public/imagenes/eliminar.png'},
-{id:3, nombre: 'dania',correo: 'dania@jedi.com', numero: 123456, fecha: '2025-03-29', hora: '14:00', mesa: 'mesa 5', comensales: 4, estatus: 'cancelado', edicion: '/public/imagenes/editar.png', edicion1:'/public/imagenes/eliminar.png'},
-{id:4, nombre: 'domi',correo: 'domi@jedi.com', numero: 123456, fecha: '2025-03-29', hora: '14:00', mesa: 'mesa 5', comensales: 4, estatus: 'cancelado', edicion: '/public/imagenes/editar.png', edicion1:'/public/imagenes/eliminar.png'},
-]);
+const filteredReserve = ref([]);
+const errorMensaje = ref('');
 
-const confirmarAccion = () => {
-  const respuesta = window.confirm("¿Deseas eliminar?");
-  
-  if (respuesta) {
-    alert("Se ha borrado exitosamente.");
-  }
+const fetchReservas = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        const response = await fetch("http://localhost:3000/api/reservaciones", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+        if(!response.ok) {
+            throw new Error("Error al obtener las reservaciones");
+        }
+        const data = await response.json();
+        filteredReserve.value = data.filter(reserva => reserva.estado !== "Eliminado");
+    }catch (error) {
+        console.error("Error al obtener las reservaciones:", error);
+        errorMensaje.value = "No se pudieron cargar las reservaciones";
+    }
 };
-const filteredReserve = computed(() => {
-  return datos.value.filter(dato =>
-    dato.nombre.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
-  
-});
-/*const datostabla = computed(()=>{
-  return datos.value.filter(dato=>{
-            if(filtro.value=== "all"){
-                return true;
+onMounted(fetchReservas);
+
+const confirmarAccion = async (id) => {
+    const respuesta = window.confirm("¿Deseas eliminar esta reservacion?");
+
+    if(respuesta){
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`http://localhost:3000/api/reservaciones/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            if(!response.ok){
+                throw new Error("Error al eliminar esta reservacion");
             }
-            if(FileReader.value=== "mesa") return dato.mesa.toLowerCase() === buscar.value;
-            return true;
-        })
-});
-*/
+            alert("Reservacion eliminada correctamente.");
+            fetchReservas();
+        } catch(error){
+            console.error("Error al eliminar la reservacion:", error);
+            alert("No se pudo eliminar la serervacion.");
+        }
+    }
+};
 
 </script>
 
@@ -79,16 +99,25 @@ const filteredReserve = computed(() => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="dato in filteredReserve":key="dato.id">
-                <td data-th="Cliente">{{ dato.nombre }}</td>
+              <tr v-for="dato in filteredReserve":key="dato.pk_id_reservacion">
+                <td data-th="Cliente">{{ dato.cliente }}</td>
                 <td data-th="Correo">{{dato.correo}}</td>
-                <td data-th="Número">{{ dato.numero }}</td>
-                <td data-th="Fecha">{{dato.fecha}}</td>
+                <td data-th="Número">{{ dato.telefono }}</td>
+                <td data-th="Fecha">{{ new Date(dato.fecha).toISOString().split('T')[0]}}</td>
                 <td data-th="Hora">{{ dato.hora }}</td>
                 <td data-th="Mesa">{{ dato.mesa }}</td>
                 <td data-th="Comensales">{{ dato.comensales }}</td>
                 <td data-th="Estatus">{{ dato.estatus }}</td>
-                <td data-th="Edición"><router-link to="/modificar_reserva"><button class="btn-verde" id="editar"><img :src="dato.edicion" id="img_editar"/></button> </router-link to="/eliminar_reservas"><button class="delete-btn" @click="confirmarAccion" id="editar"><img :src="dato.edicion1" id="img_eliminar"/></button> </td>
+                <td data-th="Edición">
+                  <router-link :to="`/modificar_reserva/${dato.pk_id_reservacion}`">
+                    <button class="btn-verde" id="editar">
+                      <img src="/public/imagenes/editar.png" id="img_editar"/>
+                    </button> 
+                  </router-link>
+                  <button class="delete-btn" @click="confirmarAccion(dato.pk_id_reservacion)">
+                    <img src="/public/imagenes/eliminar.png" id="img_eliminar"/>
+                  </button> 
+                </td>
               </tr>
             </tbody>
           </table>

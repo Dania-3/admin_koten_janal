@@ -61,7 +61,7 @@ const routes = [
       meta: { requiresAuth: true } // 👈 Ruta protegida
     },
     {
-      path: '/editar_personal',
+      path: '/editar_personal/:id',
       name:'editar_personal',
       component:EditarPersonal,
       meta: { requiresAuth: true } // 👈 Ruta protegida
@@ -91,7 +91,7 @@ const routes = [
       meta: { requiresAuth: true } // 👈 Ruta protegida
     },
     {
-      path:'/modificar_reserva',
+      path:'/modificar_reserva/:id',
       name: 'ModificarReserva',
       component:ModificarReserva,
       meta: { requiresAuth: true } // 👈 Ruta protegida
