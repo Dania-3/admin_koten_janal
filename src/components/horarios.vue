@@ -37,7 +37,7 @@ const confirmarAccion = () => {
 </script> -->
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import admin_menu from './menu_admin.vue';
 import footer_admin from './footer.vue';
 import admin_header from './header_admin.vue';
@@ -112,6 +112,17 @@ const confirmarAccion = async (id) => {
     }
   }
 };
+
+const datosFiltrados = computed(() => {
+  const query = searchQuery.value.toLowerCase();
+  return datos.value.filter((item) =>
+    Object.values(item).some(val =>
+      String(val).toLowerCase().includes(query)
+    )
+  );
+});
+
+
 </script>
 
 
@@ -160,7 +171,7 @@ const confirmarAccion = async (id) => {
                   </tr>
                 </tbody> -->
                 <tbody>
-                  <tr v-for="dato in datos" :key="dato.pk_id_horario">
+                  <tr v-for="dato in datosFiltrados" :key="dato.pk_id_horario">
                     <td data-th="Cliente">{{ dato.pk_id_horario }}</td>
                     <td data-th="Correo">{{ dato.hora }}</td>
                     <td data-th="Número">{{ dato.estado }}</td>                
