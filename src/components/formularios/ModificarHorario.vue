@@ -23,7 +23,7 @@
           </select>
       </div>
 
-      
+    
       <button class="custom-button w-25 p-3 m-4" @click="actualizarHorario"> <h5>MODIFICAR</h5> </button>
     </div>
   </div>
@@ -152,6 +152,7 @@ h5{
   padding: 10px;
   width: 50%;
 }
+
 .custom-button:hover {
   color: #3e0d26;
   border: 3px solid white;

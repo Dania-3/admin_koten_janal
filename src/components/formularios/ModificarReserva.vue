@@ -17,7 +17,7 @@
             type="text"
             class="form-control"
             v-model="form.nombre"
-            placeholder="Nombre"
+            placeholder="Nombre" disabled
           />
         </div>
         <div class="col-md-3 apellido">
@@ -26,7 +26,7 @@
             type="text"
             class="form-control"
             v-model="form.apellido"
-            placeholder="Apellido"
+            placeholder="Apellido" disabled
           />
         </div>
         <div class="col-md-3 apellido">
@@ -35,7 +35,7 @@
             type="tel"
             class="form-control"
             v-model="form.telefono"
-            placeholder="(10 dígitos)"
+            placeholder="(10 dígitos)" disabled
           />
         </div>
       </div>
@@ -46,16 +46,17 @@
             type="email"
             class="form-control"
             v-model="form.correo"
-            placeholder="Email"
+            placeholder="Email" disabled
           />
         </div>
         <div class="col-3">
           <label class="form-label">Fecha:</label>
-          <input type="date" class="form-control" v-model="form.fecha" />
+          <input type="date" class="form-control" :value="new Date(form.fecha).toLocaleDateString('en-CA')" />
         </div>
-        <div class="col-3">
+        <div class="col-3 hora">
           <label class="form-label">Hora:</label>
           <select class="form-select input-lg hora" v-model="form.hora">
+            <option :value="form.hora"> {{ form.hora }}</option>
               <option v-for="hora in horas" :key="hora.hora" :value="hora.hora">
                 {{ hora.hora }}
               </option>
@@ -66,16 +67,17 @@
             <div class="col-md-3">
           <label class="form-label">Mesa:</label>
           <select class="form-select input-lg mesa" v-model="form.mesa">
+            <option :value="form.mesa"> {{ form.mesa }}</option>
             <option v-for="mesa in mesas" :key="mesa.numero_mesa" :value="mesa.numero_mesa + ' - ' + mesa.seccion_mesa">
                 {{ mesa.seccion_mesa }} - {{ mesa.numero_mesa }}
               </option>
           </select>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 comensal">
           <label class="form-label">Comensales:</label>
           <input type="number" class="form-control comensales" v-model="form.comensales"/>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 estatus">
           <label class="form-label">Estatus:</label>
           <input type="text" class="form-control" v-model="form.estatus"/>
 
@@ -221,6 +223,7 @@ const actualizarReserva = async () => {
     const id = route.params.id;
 
     const [nombre, apellido] = form.value.nombre.split(" ");
+    const fechaFormateada = new Date(form.value.fecha).toISOString().split('T')[0];
 
     const response = await fetch(`http://localhost:3000/api/reservaciones/${id}`, {
       method: "PUT",
@@ -233,7 +236,7 @@ const actualizarReserva = async () => {
         apellido: apellido,
         telefono: form.value.telefono,
         correo: form.value.correo,
-        fecha: form.value.fecha,
+        fecha: fechaFormateada,
         hora: form.value.hora,
         mesa: form.value.mesa,
         comensales: form.value.comensales,
@@ -256,7 +259,18 @@ const actualizarReserva = async () => {
 </script>
 
 <style scoped>
+.hora{
+  width:232px;
+}
 
+.comensal{
+  width:220px;
+
+}
+.estatus{
+  width:225px;
+margin-left:33px;
+}
 .pl-40{
   width: 85%;
 }
@@ -285,8 +299,8 @@ body {
 
 }
 .informaciones{
-  width: 1000px;
- padding-left: 20px;
+  width: 988px;
+
 
 }
 .informacion{

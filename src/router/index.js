@@ -27,72 +27,86 @@ const routes = [
   {
     path: '/admin',
     name:'menu',
-    component: Menu, 
+    component: Menu,
+    meta: { requiresAuth: true } // 👈 Ruta protegida 
   },
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: Dashboard
+      component: Dashboard,
+      meta: { requiresAuth: true } // 👈 Ruta protegida
     },
     {
       path: '/reservas',
       name: 'reservas',
-      component: Reservas
+      component: Reservas,
+      meta: { requiresAuth: true } // 👈 Ruta protegida
     },
     {
       path: '/mesas',
       name: 'mesas',
-      component: Mesas
+      component: Mesas,
+      meta: { requiresAuth: true } // 👈 Ruta protegida
     },
     {
       path: '/empleados',
       name: 'personal',
-      component: empleados
+      component: empleados,
+      meta: { requiresAuth: true } // 👈 Ruta protegida
     },
     {
       path: '/horarios',
       name: 'horarios',
-      component: Horarios
+      component: Horarios,
+      meta: { requiresAuth: true } // 👈 Ruta protegida
     },
     {
       path: '/editar_personal/:id',
       name:'editar_personal',
-      component:EditarPersonal
+      component:EditarPersonal,
+      meta: { requiresAuth: true } // 👈 Ruta protegida
     },
     {
       path: '/agregar_personal',
       name:'agregar_personal',
-      component:AgregarPersonal
+      component:AgregarPersonal,
+      meta: { requiresAuth: true } // 👈 Ruta protegida
     },
     {
       path: '/reservas_agregar',
       name:'ReservasAgregar',
-      component: ReservasAgregar
+      component: ReservasAgregar,
+      meta: { requiresAuth: true } // 👈 Ruta protegida
     },
     {
       path:'/reservas_nuevo',
       name:'ReservasNuevo',
-      component: ReservasNuevo
+      component: ReservasNuevo,
+      meta: { requiresAuth: true } // 👈 Ruta protegida
     },
     {
       path:'/eliminar_personal',
       name: 'EliminarPersonal',
-      component:EliminarPersonal
+      component:EliminarPersonal,
+      meta: { requiresAuth: true } // 👈 Ruta protegida
     },
     {
       path:'/modificar_reserva/:id',
       name: 'ModificarReserva',
-      component:ModificarReserva
+      component:ModificarReserva,
+      meta: { requiresAuth: true } // 👈 Ruta protegida
     },
     {
       path: '/modificar_horario/:id',
       name: 'ModificarHorario',
-      component: ModificarHorario
+      component: ModificarHorario,
+      meta: { requiresAuth: true } // 👈 Ruta protegida
     },
     {
       path:'/agregar_horario',
       name:'AgregarHorario',
-      component:AgregarHorario
+      component:AgregarHorario,
+      meta: { requiresAuth: true } // 👈 Ruta protegida
     }
     
   ];
@@ -103,45 +117,33 @@ const router = createRouter({
   routes
 });
 
+// 🔐 Guard global para proteger rutas
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token');
+
+  if (to.meta.requiresAuth) {
+    if (!token) {
+      return next('/');
+    }
+
+    // Validación rápida (opcional): podrías decodificar el token para verificar expiración
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const now = Date.now() / 1000;
+
+      if (payload.exp && payload.exp < now) {
+        localStorage.removeItem('token'); // Limpias token vencido
+        return next('/');
+      }
+
+      next(); // Token válido
+    } catch (error) {
+      localStorage.removeItem('token');
+      return next('/');
+    }
+  } else {
+    next();
+  }
+});
+
 export default router;
-
-/*
-const routes = [
-  {
-    path: '/',
-    name:'dashboard',
-    component: Dashboard
-  },
-  {
-    path:'/admin',
-    name: 'admin',
-    component: Menu
-  },
-  {
-    path:'/login',
-    name: 'login',
-    component: Login
-  },
-  {
-    path: '/reservas',
-    name: 'reservas',
-    component: Reservas
-  },
-  {
-    path: '/Mesas',
-    name: 'mesas',
-    component: Mesas
-  },
-  {
-    path: '/empleados',
-    name: 'personal',
-    component: Personal
-  },
-  {
-    path: '/horarios',
-    name: 'horarios',
-    component: Horarios
-  },
-];
-
-*/

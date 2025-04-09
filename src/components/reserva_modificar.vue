@@ -48,7 +48,7 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="form-label">Fecha:</label>
-                    <input type="date" class="form-control">
+                    <input type="text" class="form-control" placeholder="fecha">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Hora:</label>

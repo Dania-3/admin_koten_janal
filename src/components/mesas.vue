@@ -241,7 +241,7 @@ onMounted(fetchMesas);
       <label class="form-label">Estado</label>
       <input type="text" class="form-control" v-model="estado" required>
     </div>
-    <div class="button-container mt-4">
+    <div class="button-container mt-4 modificar">
           <button @click="confirmarEditar" class="boton-form"><span>MODIFICAR</span></button>
         </div>
     </div>
@@ -273,7 +273,7 @@ onMounted(fetchMesas);
     <label class="form-label">Capacidad</label>
     <input type="number" class="form-control" v-model="capacidad" required>
   </div>
-  <div class="button-container mt-4">
+  <div class="button-container mt-4 agregar">
         <button @click="confirmarAccion" class="boton-form"><span>AGREGAR</span></button>
       </div>
   </div>
@@ -289,7 +289,22 @@ onMounted(fetchMesas);
 
 
 <style scoped>
-
+.modificar{
+  color:rgb(255, 255, 255);
+  background: transparent;
+  border: 2px solid #fff;
+  width: 120px;
+  height: 50px;
+  padding: 10px 10px;
+}
+.agregar{
+  color:rgb(255, 255, 255);
+  background: transparent;
+  border: 2px solid #fff;
+  width: 120px;
+  height: 50px;
+  padding: 10px 10px;
+}
 h3{
   color: white !important;
 
