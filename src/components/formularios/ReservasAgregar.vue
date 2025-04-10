@@ -43,7 +43,7 @@
           <label class="form-label">Mesa:</label>
           <select class="form-select input-lg mesa" v-model="form.mesa">
             <option v-for="mesa in mesas" :key="mesa.numero_mesa" :value="mesa.numero_mesa + ' - ' + mesa.seccion_mesa">
-                {{ mesa.seccion_mesa }} - {{ mesa.numero_mesa }}
+                {{ mesa.seccion_mesa }} - {{ mesa.numero_mesa }} (Capacidad: {{ mesa.capacidad }})
               </option>
           </select>
         </div>
@@ -59,7 +59,7 @@
         </div>
       </div>
       <div class="text-center">
-        <button type="submit" class="btn btn-custom text-white p-4"><h4>AGREGAR</h4></button>
+        <button type="submit" class="btn btn-custom text-white p-4"><h4>agregar</h4></button>
       </div>
     </form>
     </div>

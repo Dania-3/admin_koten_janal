@@ -52,6 +52,7 @@
         <div class="col-3">
           <label class="form-label">Fecha:</label>
           <input type="date" class="form-control" :value="new Date(form.fecha).toLocaleDateString('en-CA')" />
+          <!-- <input type="date" class="form-control" v-model="form.fecha" /> -->
         </div>
         <div class="col-3 hora">
           <label class="form-label">Hora:</label>
@@ -67,9 +68,9 @@
             <div class="col-md-3">
           <label class="form-label">Mesa:</label>
           <select class="form-select input-lg mesa" v-model="form.mesa">
-            <option :value="form.mesa"> {{ form.mesa }}</option>
-            <option v-for="mesa in mesas" :key="mesa.numero_mesa" :value="mesa.numero_mesa + ' - ' + mesa.seccion_mesa">
-                {{ mesa.seccion_mesa }} - {{ mesa.numero_mesa }}
+            <option :value="form.mesa"> {{ form.mesa }} (Capacidad: {{ form.mesa.capacidad }})</option>
+            <option v-for="mesa in mesas" :key="mesa.numero_mesa" :value="mesa.seccion_mesa + ' - ' + mesa.numero_mesa">
+                {{ mesa.seccion_mesa }} - {{ mesa.numero_mesa }} (Capacidad: {{ mesa.capacidad }})
               </option>
           </select>
         </div>
@@ -79,7 +80,12 @@
         </div>
         <div class="col-md-3 estatus">
           <label class="form-label">Estatus:</label>
-          <input type="text" class="form-control" v-model="form.estatus"/>
+          <!-- <input type="text" class="form-control" v-model="form.estatus"/> -->
+          <select class="form-control" v-model="form.estatus">
+            <option :value="form.estatus" selected>{{ form.estatus }}</option>
+            <option value="Activo">Activo</option>
+            <option value="Cancelada">Cancelada</option>
+          </select>
 
           <!-- <select class="form-select input-lg" v-model="form.mesa">
             <option>Libre</option>
@@ -90,15 +96,15 @@
         </div>
           </div>
         </div>
-        <div class="col-6">
+        <!-- <div class="col-6">
           <label class="form-label">Comentario:</label>
           <textarea
             class="comentario form-control"
             v-model="form.comentario"
             rows="3"
-            placeholder="Comentarios (opcional)"
+            placeholder="Comentarios (opcional)" disabled
           ></textarea>
-        </div>
+        </div> -->
       </div>
       <div class="text-center">
         <button type="submit" class="btn btn-custom text-white m-5 p-4"><h4>ACTUALIZAR</h4></button>
@@ -172,7 +178,7 @@ const form = ref({
   hora: "",
   mesa: "",
   comensales: "",
-  comentario: "",
+  // comentario: "",
   estatus: ""
 });
 
@@ -204,7 +210,7 @@ const obtenerReserva = async () => {
     form.value.hora = reserva.hora;
     form.value.mesa = reserva.mesa;
     form.value.comensales = reserva.comensales;
-    form.value.comentario = reserva.comentario;
+    // form.value.comentario = reserva.comentario;
     form.value.estatus = reserva.estatus;
   } catch (error) {
     console.error("Error al obtener la reservacion", error);
@@ -212,9 +218,14 @@ const obtenerReserva = async () => {
   }
 };
 
-onMounted(() => {
-    console.log("ID recibido:", route.params.id);
-    obtenerReserva();
+// onMounted(() => {
+//     console.log("ID recibido:", route.params.id);
+//     obtenerReserva();
+// });
+onMounted(async () => {
+  console.log("ID recibido:", route.params.id);
+  await obtenerMesas(); // Espera a tener las mesas
+  await obtenerReserva(); // Ahora sí busca la mesa en base a los datos de la reserva
 });
 
 const actualizarReserva = async () => {
